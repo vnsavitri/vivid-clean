@@ -20,7 +20,52 @@ Do not use this to hide that you generated an entire assignment or application d
 
 ---
 
-## What you need
+## Pick your setup
+
+Choose the path that matches how comfortable you are with the command line.
+
+- **[Ask your AI assistant](#ask-your-ai-assistant)** — the easiest option. Copy a prompt into Claude Code, Codex, ChatGPT, or any assistant that can run commands.
+- **[Quick start](#quick-start-for-technical-users)** — if you already know what `git clone`, `brew`, and `pip` mean.
+- **[Step-by-step setup](#step-by-step-setup)** — if you want every command explained.
+
+---
+
+## Ask your AI assistant
+
+The simplest way to get started is to let an AI assistant handle the install for you. Open [PROMPT.md](./PROMPT.md), copy the "One-time setup prompt" block, and paste it into Claude Code, Codex, ChatGPT, or any assistant that can run commands on your computer.
+
+Once the assistant has installed vivid-clean, you can ask it to clean files like this:
+
+```
+Please run /vivid-clean on "/Users/vnsavitri/Documents/Draft.docx".
+```
+
+---
+
+## Quick start for technical users
+
+```bash
+cd ~
+git clone https://github.com/vnsavitri/vivid-clean.git
+cd vivid-clean
+./install.sh
+# Install pandoc if the installer warns you it is missing:
+#   macOS: brew install pandoc
+#   Debian/Ubuntu: sudo apt-get install pandoc
+# Start the local cleaning service:
+cd ~/vivid-clean/vendor/watermarks-remover
+python3 service/scripts/server.py --host 127.0.0.1 --port 8765
+```
+
+Then trigger the skill from your AI assistant:
+
+```
+/vivid-clean Draft.docx
+```
+
+---
+
+## Step-by-step setup
 
 You do not need to be a programmer, but you need to be comfortable copying and pasting a few commands into the Terminal app on your Mac or Linux computer. Windows users: this tool works best on macOS and Linux for now.
 
@@ -36,11 +81,9 @@ Before you start, check that you have:
    ```bash
    pandoc --version
    ```
-   If it is not installed, the install script will tell you how to get it.
+   If it is not installed, the install script will tell you how to install it.
 
----
-
-## Installation
+### 1. Download the tool
 
 Open Terminal and run these commands one at a time.
 
