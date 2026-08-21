@@ -1,113 +1,168 @@
 # vivid-clean
 
-A document- and media-cleaning pipeline for people who use AI to help them write.
+Clean AI watermarks and AI-writing tells out of your documents.
 
-`vivid-clean` takes a file drafted with an AI assistant and removes both the deterministic marks (invisible Unicode, C2PA/EXIF/XMP metadata, document properties) and the statistical tells that make text sound machine-generated.
+If you use AI to help you write because of dyslexia, ADHD, autism, a learning disability, or voice dictation, companies like Anthropic, OpenAI, and Google want to put a watermark on text that AI helped produce. That watermark cannot tell the difference between someone who pasted a whole prompt and someone who just asked AI to fix their grammar. It marks both people as suspect.
 
-It is not a cheating tool. It is an accessibility tool. If you are dyslexic, neurodivergent, have a learning disability, or rely on voice dictation and AI editing to communicate clearly, the current push for AI watermarking treats assistive technology as a confession. This tool pushes back.
+**vivid-clean** is a small tool that helps. It strips hidden markers from your files and rewrites the text so it sounds like a person wrote it.
 
-## What it does
+---
 
-1. **Deterministic clean** — strips invisible Unicode, file metadata, and vendor-bound provenance marks.
-2. **Extract** — converts the cleaned file to Markdown.
-3. **Humanise** — rewrites the text to sound like a person, breaking statistical watermark patterns and AI-tell vocabulary.
-4. **Re-export** — converts the result back to the original format.
+## Is this for me?
 
-## Supported formats
+Use this if:
 
-| Format | Notes |
-|--------|-------|
-| **DOCX** | Microsoft Word; most common use case |
-| **PPTX** | PowerPoint slides and notes |
-| **PDF** | Text extraction; output is DOCX by default |
-| **TXT** | Plain text |
-| **MD** | Markdown |
-| **Images** | PNG, JPEG, WebP, AVIF, HEIC, BMP, GIF, TIFF, SVG — metadata/C2PA strip only |
+- You use ChatGPT, Claude, or another AI assistant to help draft emails, cover letters, essays, reports, or applications.
+- You want the final document to sound like you, not a chatbot.
+- You want to remove hidden file metadata and watermark markers.
 
-## How it works
+Do not use this to hide that you generated an entire assignment or application dishonestly. This tool is for accessibility, not cheating.
 
-The pipeline wraps two open-source projects and adds a humanising rewrite pass:
+---
 
-- **[watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover)** by Guillaume Meyer — the primary cleaner for deterministic marks.
-- **[anthropies](https://github.com/CharlesHoskinson/anthropies)** — a fallback cleaner for Anthropic/Claude-specific marks.
-- **`/human` rewrite rules** — degrades statistical text watermarks by changing vocabulary, rhythm, and sentence structure.
+## What you need
 
-For strongest mitigation against keyed statistical watermarks, route the final draft through a local, non-watermarked open model such as Kimi, DeepSeek, GLM, Qwen, Llama, or Mistral with watermarking disabled.
+You do not need to be a programmer, but you need to be comfortable copying and pasting a few commands into the Terminal app on your Mac or Linux computer. Windows users: this tool works best on macOS and Linux for now.
 
-## Quick start
+Before you start, check that you have:
 
-### 1. Install dependencies
+1. **Python 3.10 or newer.** Open Terminal and type:
+   ```bash
+   python3 --version
+   ```
+   If you see `3.10`, `3.11`, `3.12`, or higher, you are good. If not, install Python from [python.org](https://python.org).
 
-You need Python 3.10+, plus `pandoc` and `markitdown`:
+2. **pandoc.** This converts files between formats. To check, type:
+   ```bash
+   pandoc --version
+   ```
+   If it is not installed, the install script will tell you how to get it.
+
+---
+
+## Installation
+
+Open Terminal and run these commands one at a time.
+
+### 1. Download the tool
 
 ```bash
-# macOS
-brew install pandoc
-pip install markitdown
-
-# Debian/Ubuntu
-sudo apt-get install pandoc
-pip install markitdown
+cd ~
+git clone https://github.com/vnsavitri/vivid-clean.git
+cd vivid-clean
 ```
 
-### 2. Start the watermarks-remover service
+What this does: it copies the tool from GitHub onto your computer into a folder called `vivid-clean` in your home directory.
+
+### 2. Run the installer
 
 ```bash
-git clone --depth 1 https://github.com/guillaumemeyer/watermarks-remover.git ./vendor/watermarks-remover
-cd ./vendor/watermarks-remover
+./install.sh
+```
+
+This will:
+- check that Python is new enough;
+- install `markitdown` (a small helper for reading documents);
+- warn you if `pandoc` is missing and tell you how to install it;
+- download `watermarks-remover`, the open-source engine that removes hidden markers;
+- install the agent skill so you can trigger it with `/vivid-clean`.
+
+### 3. Install pandoc if the installer told you to
+
+On a Mac with Homebrew:
+```bash
+brew install pandoc
+```
+
+On Ubuntu or Debian Linux:
+```bash
+sudo apt-get install pandoc
+```
+
+### 4. Start the cleaning service
+
+The installer prints this step, but here it is again. In Terminal, run:
+
+```bash
+cd ~/vivid-clean/vendor/watermarks-remover
 python3 service/scripts/server.py --host 127.0.0.1 --port 8765
 ```
 
-### 3. Install vivid-clean
+Leave that Terminal window open. This starts a small local service on your own computer. It does not send your files to the internet.
 
-Copy `SKILL.md` (or the full repo contents) into your agent skills directory, for example:
+---
 
-```bash
-mkdir -p ~/.agents/skills/vivid-clean
-cp ./SKILL.md ~/.agents/skills/vivid-clean/SKILL.md
-```
+## How to use it
 
-### 4. Run it
+This tool is designed to be used through an AI assistant that supports skills (also called tools or extensions). Think of it like asking your assistant to "run Grammarly, but for AI watermarks."
 
-The skill accepts file paths or directories. For a single file:
-
-```bash
-# Trigger the skill from your agent, or run the underlying pipeline:
-./vivid-clean "Draft.docx"
-```
-
-The output is saved next to the source with a `_vivid` suffix:
+Once the installer has finished, you can say something like:
 
 ```
-Draft.docx → Draft_vivid.docx
+/vivid-clean Draft.docx
 ```
 
-## Important constraints
+or, in plain language:
 
-- **Do not change substantive meaning or legal intent.** This is a style and watermark-mitigation pass, not a content edit.
-- **Do not remove required institutional voice.** Keep formal documents appropriate while removing AI tells.
-- **Preserve originals.** The source file is never overwritten.
-- **This tool does not prove a text is human-written, nor does it guarantee an official detector will fail.** It raises the cost of detection and protects ordinary people who use assistive technology.
+```
+Please run vivid-clean on my Draft.docx file.
+```
 
-## Limitations
+Your assistant will return a cleaned file named `Draft_vivid.docx` in the same folder as the original. The original file is never changed.
 
-- `watermarks-remover` Layer A removes invisible Unicode and file metadata deterministically. It does **not** remove a keyed statistical text watermark.
-- `anthropies clean` removes metadata and vendor-bound marks. It does **not** remove Anthropic's keyed text watermark.
-- The `/human` rewrite pass degrades statistical watermarks by changing word choices, but because it is run by an AI assistant, it does not give a cryptographic guarantee.
-- For maximum assurance, run the final draft through a local open model with watermarking off, or edit it heavily yourself.
+---
+
+## Supported file types
+
+| Type | What happens |
+|------|--------------|
+| DOCX (Microsoft Word) | Cleaned and rewritten; most common use case |
+| PPTX (PowerPoint) | Cleaned and rewritten |
+| PDF | Converted to DOCX, cleaned, and rewritten |
+| TXT | Cleaned and rewritten |
+| MD (Markdown) | Cleaned and rewritten |
+| Images (PNG, JPEG, etc.) | Hidden metadata and C2PA tags stripped only |
+
+---
+
+## For the strongest result
+
+If you started with ChatGPT or Claude, route the text through a non-watermarked open model first, such as **Kimi, DeepSeek, GLM, Qwen, Llama, or Mistral** with watermarking turned off. Then run vivid-clean.
+
+This extra step helps break any statistical watermark pattern the original model may have added.
+
+---
+
+## Important notes
+
+- **Your original file is never overwritten.** You always get a new file with `_vivid` in the name.
+- **The meaning of your text is preserved.** This is a style and privacy pass, not a content edit.
+- **This tool does not guarantee that every detector will fail.** It raises the cost of detection and protects ordinary people who use assistive technology. It is not a magic invisibility cloak.
+
+---
+
+## How it works
+
+vivid-clean combines three things:
+
+1. **[watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover)** by Guillaume Meyer — removes invisible Unicode, file metadata, and other hidden markers.
+2. **[anthropies](https://github.com/CharlesHoskinson/anthropies)** — a fallback cleaner for Claude-specific marks.
+3. **`/human` rewrite rules** — rewrites the text to break AI-detection patterns and chatbot-sounding vocabulary.
+
+---
 
 ## Why this exists
 
-AI labs like Anthropic, OpenAI, and Google are pushing watermarking as "transparency." In practice, watermarking punishes the people who already face the most friction when they write: people with dyslexia, ADHD, autism, learning disabilities, and anyone who dictates or uses AI as an accessibility aid.
-
-There is no moral difference between running Grammarly over an email and asking ChatGPT or Claude to tidy up the same sentences. Both are assistive. Both help people express themselves. One gets a friendly green tick. The other is about to get a watermark that says "this person needed help."
+AI labs are pushing watermarking as "transparency." In practice, it punishes the people who already face the most friction when they write. There is no moral difference between running Grammarly over an email and asking ChatGPT to tidy up the same sentences. Both are assistive. One gets a friendly green tick. The other is about to get a watermark that says "this person needed help."
 
 This tool is for the second group.
+
+---
 
 ## Credits and license
 
 - Deterministic cleaning by [watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover) (Guillaume Meyer).
-- Fallback Anthropic/Claude cleaning by [anthropies](https://github.com/CharlesHoskinson/anthropies).
+- Fallback Claude-specific cleaning by [anthropies](https://github.com/CharlesHoskinson/anthropies).
 - Humanising rewrite rules derived from the `/human` skill.
 
-Released under the MIT License.
+Released under the [MIT License](./LICENSE).
