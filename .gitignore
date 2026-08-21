@@ -1,0 +1,34 @@
+# Vendored dependencies (installed by install.sh)
+vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.env
+.venv
+venv/
+
+# Node (for anthropies fallback)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary working directories
+.tmp/
+tmp/
+*.tmp
+
+# Generated outputs
+*_vivid.*
