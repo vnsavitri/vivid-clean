@@ -1,16 +1,6 @@
 # vivid-clean
 
-```text
-           +----------------------------------------------------------------------+
-           |   _    _______    __________        ________    _________    _   __  |
-           |  | |  / /  _/ |  / /  _/ __ \      / ____/ /   / ____/   |  / | / /  |
-           |  | | / // / | | / // // / / /_____/ /   / /   / __/ / /| | /  |/ /   |
-           |  | |/ // /  | |/ // // /_/ /_____/ /___/ /___/ /___/ ___ |/ /|  /    |
-           |  |___/___/  |___/___/_____/      \____/_____/_____/_/  |_/_/ |_/     |
-           |                                                                      |
-           |                 PRIVATE BY DEFAULT | FILES STAY LOCAL                |
-           +----------------------------------------------------------------------+
-```
+![vivid-clean — private by default](./gh-cover.jpg)
 
 [![Open source](https://img.shields.io/badge/open%20source-yes-5B6CFF?style=flat-square)](./LICENSE)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-00B67A?style=flat-square)](./LICENSE)
