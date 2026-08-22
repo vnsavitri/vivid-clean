@@ -1,10 +1,15 @@
 # vivid-clean
 
 ```text
-      _     _    _        _
- __ _(_)_ _(_)__| |___ __| |___ __ _ _ _
- \ V / \ V / / _` |___/ _| / -_) _` | ' \
-  \_/|_|\_/|_\__,_|   \__|_\___\__,_|_||_|
+           +----------------------------------------------------------------------+
+           |   _    _______    __________        ________    _________    _   __  |
+           |  | |  / /  _/ |  / /  _/ __ \      / ____/ /   / ____/   |  / | / /  |
+           |  | | / // / | | / // // / / /_____/ /   / /   / __/ / /| | /  |/ /   |
+           |  | |/ // /  | |/ // // /_/ /_____/ /___/ /___/ /___/ ___ |/ /|  /    |
+           |  |___/___/  |___/___/_____/      \____/_____/_____/_/  |_/_/ |_/     |
+           |                                                                      |
+           |                 PRIVATE BY DEFAULT | FILES STAY LOCAL                |
+           +----------------------------------------------------------------------+
 ```
 
 [![Open source](https://img.shields.io/badge/open%20source-yes-5B6CFF?style=flat-square)](./LICENSE)
@@ -22,6 +27,8 @@ Clean deterministic AI markers and common AI-writing tells from documents, image
 ### Unreleased
 
 - Refreshed the README with clearer project facts, a quicker setup path and a running update log.
+- Added a standalone, local-first project wordmark.
+- Linked the background article on AI watermarking and accessibility.
 
 ## What this is
 
@@ -154,6 +161,10 @@ For the technical detail, see [SKILL.md](./SKILL.md). The local service is provi
 AI can make writing possible or less exhausting for people with dyslexia, ADHD, autism, learning disabilities, injury, fatigue or simply a busy life. A marker that treats all AI-assisted writing as the same ignores that reality.
 
 People should be able to decide what metadata travels with their work, while still being honest about authorship where it matters.
+
+## Read the background
+
+For the longer version of why this project exists, read [AI watermarking is the new scarlet letter](https://lnkd.in/p/guRDpEQB).
 
 ## Credits and licence
 
