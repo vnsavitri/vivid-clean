@@ -1,6 +1,6 @@
-# vivid-clean
-
 ![vivid-clean — private by default](./gh-cover.jpg)
+
+# vivid-clean
 
 [![Open source](https://img.shields.io/badge/open%20source-yes-5B6CFF?style=flat-square)](./LICENSE)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-00B67A?style=flat-square)](./LICENSE)
