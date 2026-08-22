@@ -22,13 +22,12 @@ Clean deterministic AI markers and common AI-writing tells from documents, image
 
 > Your files stay on your computer. `vivid-clean` does not upload them to a service.
 
-## Update log
+## Project updates
 
-### Unreleased
+### 22 August 2026
 
-- Refreshed the README with clearer project facts, a quicker setup path and a running update log.
-- Added a standalone, local-first project wordmark.
-- Linked the background article on AI watermarking and accessibility.
+- Refreshed the setup guide and project details.
+- Added background reading on AI watermarking and accessibility.
 
 ## What this is
 
