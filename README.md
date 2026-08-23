@@ -32,8 +32,7 @@ The report says what was checked, what came out, what remains, and which checks 
 
 vivid-clean supports macOS and Linux. It needs Git and Python 3.11 or newer. It doesn't need Pandoc, MarkItDown or Docker.
 
-😳 
-### New to the command line? Copy this into your AI assistant
+### New to the command line? Copy this into your AI assistant 😳 
 
 Use an assistant that can run terminal commands on your computer, such as Codex, Claude Code or Cursor in agent mode. A browser chat can't install software for you.
 
@@ -56,8 +55,7 @@ At the end, show me the installed version and which assistant skill folders were
 
 That gives you the core cleaner without the optional Node-based fallback. Once `doctor` passes, give your assistant a document path using the prompt under [Use it with an assistant](#use-it-with-an-assistant).
 
-🤓 
-### Comfortable in a terminal? Use pipx
+### Comfortable in a terminal? Use pipx 🤓
 
 Check the prerequisites, then install:
 
@@ -111,8 +109,7 @@ Your original stays as is. vivid-clean makes a restricted working copy, handles 
 
 ![How vivid-clean keeps the original file untouched, cleans known marks locally, protects values during the writing pass, returns text to the same document format, and saves a checked copy with a report](./docs/assets/vivid-clean-workflow.svg)
 
-👩🏻‍💻 
-### Curb your enthusiasm on images
+### Curb your enthusiasm on images 👩🏻‍💻 
 
 For images, “clean” means removing recognised metadata and provenance fields. vivid-clean v0.3.0 doesn't remove visible logos or pixel-level watermarks, and it doesn't send the image to a multimodal model. Those checks stay `not_checked` in the report.
 
@@ -167,8 +164,7 @@ vivid-clean cleanup --dry-run
 vivid-clean cleanup --older-than 0
 ```
 
-ℹ️ 
-## What works today
+## What works today ℹ️ 
 
 | Input | Current behaviour | Main limitation |
 | --- | --- | --- |
@@ -188,8 +184,7 @@ It doesn't send the image through Kimi, DeepSeek, Qwen or another multimodal mod
 
 Pixel removal may come later as a separate, opt-in restoration step. It needs an exact backend name, local-versus-hosted disclosure, before-and-after checks, and a warning that generated pixels can change the image. Until that exists and passes real tests, vivid-clean won't claim it.
 
-🙋🏽‍♀️ 
-## Common questions
+## Common questions 🙋🏽‍♀️
 
 ### Is vivid-clean an AI watermark remover?
 
