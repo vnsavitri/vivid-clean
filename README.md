@@ -34,9 +34,9 @@ vivid-clean supports macOS and Linux. It needs Git and Python 3.11 or newer. It 
 
 ### New to the command line? Copy this into your AI assistant 😳 
 
-Use an assistant that can run terminal commands on your computer, such as Codex, Claude Code or Cursor in agent mode. A browser chat can't install software for you.
+Use an AI assistant that can run terminal commands on your computer, such as Codex, Claude Code or Cursor (or Kimi Code, Qwen Code, Deepseek Harness, jCode, Opencode, etc.) in agent mode. A browser chat can't install software for you.
 
-Use the copy button in the top-right corner of this box, then paste the whole prompt into your assistant:
+Use the copy button in the top-right corner of this box, then paste the whole prompt into your AI assistant terminal or IDE:
 
 ```text
 Install vivid-clean from the official PyPI package for me. The source repo is https://github.com/vnsavitri/vivid-clean and the package name is vivid-clean.
