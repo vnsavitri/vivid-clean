@@ -9,13 +9,11 @@ import sys
 from pathlib import Path
 
 from . import __version__
+from .bootstrap import setup_runtime
+from .runtime import runtime_root
 from .service import ServiceError, WatermarksClient
 from .verify import SEVERITY, VerificationError, diff, failing_findings, scan
 from .workflow import WorkflowError, cleanup_sessions, find_tool, finish, prepare
-
-
-def _repo_root() -> Path:
-    return Path(__file__).resolve().parents[2]
 
 
 def _print_findings(result: dict) -> None:
@@ -35,7 +33,7 @@ def _doctor() -> int:
     tools = {command: find_tool(command) for command in ("git",)}
     for command, location in tools.items():
         print(f"{command}: {location or 'not found'}")
-    repo = _repo_root()
+    repo = runtime_root()
     wm = repo / "vendor" / "watermarks-remover"
     anthropies = repo / "vendor" / "anthropies" / "dist" / "cli.js"
     print(
@@ -64,6 +62,7 @@ def _doctor() -> int:
             )
         else:
             print(f"cleaning service: unavailable ({exc})")
+            print("next step: run vivid-clean setup")
         return 0 if wm.is_dir() else 1
 
 
@@ -115,6 +114,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     cleanup.add_argument("--dry-run", action="store_true")
     cleanup.add_argument("--json", action="store_true")
+    setup = sub.add_parser(
+        "setup", help="install the pinned cleaner and assistant skill"
+    )
+    setup.add_argument("--skills-only", action="store_true")
+    setup.add_argument(
+        "--no-anthropies",
+        action="store_true",
+        help="skip the optional Node-based fallback",
+    )
+    setup.add_argument("--json", action="store_true")
     sub.add_parser("doctor", help="show installed and missing capabilities")
     return parser
 
@@ -123,7 +132,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         if args.command == "prepare":
-            session = prepare(args.input, _repo_root())
+            session = prepare(args.input, runtime_root())
             print(session)
             draft = session / "draft.md"
             if draft.exists():
@@ -191,6 +200,19 @@ def main(argv: list[str] | None = None) -> int:
                         print(f"{action}: {path}")
                 else:
                     print("No expired vivid-clean sessions found.")
+            return 0
+        if args.command == "setup":
+            result = setup_runtime(
+                skills_only=args.skills_only,
+                with_anthropies=not args.no_anthropies,
+            )
+            if args.json:
+                print(json.dumps(result, indent=2))
+            else:
+                print(f"Runtime files: {result['runtime_root']}")
+                print("watermarks-remover: " + str(result["watermarks_remover"]))
+                print("anthropies: " + str(result["anthropies"]))
+                print("Installed the vivid-clean skill for compatible assistants.")
             return 0
         return _doctor()
     except (WorkflowError, VerificationError, ServiceError, OSError) as exc:

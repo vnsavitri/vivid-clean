@@ -10,7 +10,7 @@ Run the installed CLI. Don't rebuild the pipeline with bits of inline shell or P
 ## Before starting
 
 1. Confirm the user owns the file or is allowed to edit it.
-2. Run `vivid-clean doctor` if the setup hasn't been checked in this environment.
+2. Run `vivid-clean doctor` if the setup hasn't been checked in this environment. If the pinned cleaner is missing, run `vivid-clean setup` once.
 3. Never overwrite the source.
 4. Ask for a suffix only when the user hasn't expressed a preference and the filename matters. `_vivid` is the compatibility default, but it advertises the tool. A neutral suffix such as `_reviewed` is often better.
 
@@ -108,13 +108,13 @@ Run `vivid-clean cleanup --dry-run` to inspect expired sessions, or `vivid-clean
 
 ## Keep the skill current
 
-After updating the vivid-clean repo, refresh the assistant instructions with:
+After updating vivid-clean, refresh the assistant instructions with:
 
 ```bash
-./install.sh --skills-only
+vivid-clean setup --skills-only
 ```
 
-The installer updates Agent Skills-compatible tools, Cursor, Claude Code and Codex, including a custom `CODEX_HOME`. It keeps replaced copies under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That sits outside the folders assistants scan for skills. The installer also moves older `vivid-clean.backup.*` folders out of those scan paths, so only the current skill is discovered.
+From a source checkout, `./install.sh --skills-only` does the same thing. The installer updates Agent Skills-compatible tools, Cursor, Claude Code and Codex, including a custom `CODEX_HOME`. It keeps replaced copies under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That sits outside the folders assistants scan for skills. The installer also moves older `vivid-clean.backup.*` folders out of those scan paths, so only the current skill is discovered.
 
 Don't copy `SKILL.md` by hand unless the installer can't run. A partial update can leave the instructions out of step with the CLI.
 

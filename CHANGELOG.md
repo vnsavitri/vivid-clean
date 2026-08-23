@@ -4,16 +4,25 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## Unreleased
 
+Nothing yet.
+
+## 0.3.0 - 2026-08-23
+
 ### Added
 
 - Writing-pass provenance in Markdown and JSON reports, including the declared backend, its kind, the rewrite purpose, and a best-effort five-word-sequence overlap measure.
 - A separate statistical-risk-reduction mode for people who knowingly choose a more substantial rewrite.
+- A tested Python wheel, a `vivid-clean setup` command for packaged installs, and a Trusted Publishing workflow for PyPI.
+- CodeQL and OpenSSF Scorecard workflows, plus badges that link to their results.
+- A lightweight 1280×640 social-preview image for shared repository links.
 
 ### Changed
 
 - Added a plain-English workflow diagram and its editable Excalidraw source to the README.
 - Statistical-risk reduction now requires a human or declared local unwatermarked backend. Long passages must clear the rewrite-depth target, while short passages are reported as insufficient to measure.
 - The assistant skill now warns that an origin or known watermarked model can add a fresh mark during rewriting.
+- GitHub Actions now use pinned Node 24 releases instead of deprecated Node 20 releases.
+- The repository now carries searchable topics for accessibility, privacy, document cleaning and AI watermarking.
 
 ### Fixed
 

@@ -3,7 +3,10 @@
 ![vivid-clean: local-first document cleaning](./gh-cover2.png)
 
 [![CI](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml/badge.svg)](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/vnsavitri/vivid-clean/actions/workflows/codeql.yml/badge.svg)](https://github.com/vnsavitri/vivid-clean/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/vnsavitri/vivid-clean/badge)](https://scorecard.dev/viewer/?uri=github.com/vnsavitri/vivid-clean)
 [![Latest release](https://img.shields.io/github/v/release/vnsavitri/vivid-clean?style=flat-square)](https://github.com/vnsavitri/vivid-clean/releases/latest)
+[![PyPI](https://img.shields.io/pypi/v/vivid-clean?style=flat-square)](https://pypi.org/project/vivid-clean/)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-00B67A?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](./pyproject.toml)
 [![Local metadata cleaning](https://img.shields.io/badge/metadata%20cleaning-local-5B6CFF?style=flat-square)](#privacy-in-plain-english)
@@ -25,9 +28,49 @@ You get a command-line tool and an assistant skill. Together, they handle the fi
 
 The report says what was checked, what came out, what remains, and which checks weren't available. It won't call a file universally “clean”. No honest tool knows what every outside detector will decide.
 
-## Install
+## Install: pick your route
 
-vivid-clean supports macOS and Linux. You'll need Git and Python 3.11 or newer. It doesn't need Pandoc, MarkItDown or Docker.
+vivid-clean supports macOS and Linux. It needs Git and Python 3.11 or newer. It doesn't need Pandoc, MarkItDown or Docker.
+
+### New to the command line? Give this to your AI assistant
+
+Use an assistant that can run terminal commands on your computer, such as Codex, Claude Code or Cursor in agent mode. A browser chat can't install software for you.
+
+Copy and paste this prompt:
+
+> Install vivid-clean from the official PyPI package for me. The source repo is `https://github.com/vnsavitri/vivid-clean` and the package name is `vivid-clean`. First check that I'm on macOS or Linux and have Git and Python 3.11 or newer. If `pipx` is missing, install it using the normal user-level method for my system. Don't use `sudo` or change system Python without explaining why and asking me first. Then run `pipx install vivid-clean`, `vivid-clean setup --no-anthropies`, and `vivid-clean doctor`. If my shell can't find `vivid-clean`, run `pipx ensurepath` and tell me whether I need to restart the terminal. Stop and explain any error instead of trying random fixes. At the end, show me the installed version and which assistant skill folders were updated. Don't clean any documents yet.
+
+That gives you the core cleaner without the optional Node-based fallback. Once `doctor` passes, give your assistant a document path using the prompt under [Use it with an assistant](#use-it-with-an-assistant).
+
+### Comfortable in a terminal? Use pipx
+
+Check the prerequisites, then install:
+
+```bash
+python3 --version
+git --version
+pipx --version
+
+pipx install vivid-clean
+vivid-clean setup --no-anthropies
+vivid-clean doctor
+```
+
+`pipx` keeps vivid-clean in its own Python environment. `setup` checks out the reviewed cleaning engine at its exact commit and installs the assistant skill. If your shell can't find the command after installation, run `pipx ensurepath`, restart the terminal and try `vivid-clean doctor` again.
+
+Already installed? Upgrade the package and refresh the pinned cleaner and skill together:
+
+```bash
+pipx upgrade vivid-clean
+vivid-clean setup --no-anthropies
+vivid-clean doctor
+```
+
+Leave off `--no-anthropies` if you want vivid-clean to build the optional anthropies fallback when Node 22 and pnpm are available. The core cleaner doesn't need it.
+
+### Installing from source
+
+Use the source route when you want to inspect the code, contribute, or test an unreleased change:
 
 ```bash
 git clone https://github.com/vnsavitri/vivid-clean.git
@@ -36,7 +79,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-The installer creates `.venv` inside the repo, checks out audited dependency commits, and installs the skill for compatible agents at:
+The source installer creates `.venv` inside the repo and builds anthropies only when Node 22 and pnpm are already available. Both install routes check out audited dependency commits and put the skill in the folders used by compatible assistants:
 
 | Assistant | Skill location |
 | --- | --- |
@@ -45,15 +88,7 @@ The installer creates `.venv` inside the repo, checks out audited dependency com
 | Claude Code | `~/.claude/skills/vivid-clean/` |
 | Codex | `~/.codex/skills/vivid-clean/` |
 
-If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing skill copies are moved out of the assistant's skill folder and backed up under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That means an old copy can't appear as a duplicate skill. Run `./install.sh --skills-only` when the CLI is already set up and you only want to refresh the assistant instructions.
-
-If you've already got Node 22 and pnpm, the installer builds anthropies as a fallback. If you haven't, no drama. The core installation still works.
-
-Add `~/.local/bin` to your `PATH` if it isn't there already, then check the setup:
-
-```bash
-vivid-clean doctor
-```
+If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing skill copies are moved out of the assistant's skill folder and backed up under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That means an old copy can't appear as a duplicate skill. Run `vivid-clean setup --skills-only` when you only want to refresh the assistant instructions. From a source checkout, `./install.sh --skills-only` does the same thing.
 
 ## How it works
 
@@ -147,7 +182,7 @@ The detailed assumptions and failure cases are in the [threat model](./docs/thre
 
 Meaningful updates get a dated [changelog](./CHANGELOG.md), a matching Git tag, and a [GitHub Release](https://github.com/vnsavitri/vivid-clean/releases). Small copy fixes may sit under `Unreleased` until the next version. If a change affects how your file is handled, installed, or checked, it belongs in the release notes.
 
-The latest release is [v0.2.0](https://github.com/vnsavitri/vivid-clean/releases/tag/v0.2.0). It adds format-preserving Word and PowerPoint editing, clearer check reports, safer session cleanup, and skill updates that don't leave duplicate copies behind.
+The latest release is [v0.3.0](https://github.com/vnsavitri/vivid-clean/releases/tag/v0.3.0). It adds provider-aware statistical watermark guardrails, a tested PyPI package, security scanning, and cleaner setup for packaged installs.
 
 ## Why this exists
 
