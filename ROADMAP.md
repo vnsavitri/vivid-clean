@@ -11,7 +11,7 @@ PDF stays PDF for deterministic cleaning. Humanising still needs an editable sou
 ## Distribution
 
 - Publish tagged releases with checksums.
-- Add `pipx` and `uv tool` installation paths.
+- Add a `uv tool` installation path.
 - Add Windows CI and installation guidance.
 - Add explicit skill install and uninstall commands.
 
