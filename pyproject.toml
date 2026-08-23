@@ -13,7 +13,6 @@ authors = [{name = "Vivid Savitri"}]
 dependencies = []
 
 [project.optional-dependencies]
-documents = ["markitdown[docx,pdf,pptx]==0.1.7"]
 dev = ["ruff>=0.12,<1"]
 
 [project.scripts]

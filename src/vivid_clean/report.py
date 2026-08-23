@@ -7,6 +7,53 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+DETERMINISTIC_CATEGORIES = {"invisible_unicode", "typographic_space"}
+
+
+def _finding_channel_status(
+    verification: dict[str, Any] | None, categories: set[str]
+) -> dict[str, Any]:
+    if verification is None:
+        return {"status": "incomplete"}
+    remaining = [
+        item
+        for key in ("residual", "introduced")
+        for item in verification[key]
+        if item["category"] in categories
+    ]
+    return {"status": "findings" if remaining else "passed", "findings": remaining}
+
+
+def _channels(
+    output: Path, verification: dict[str, Any] | None, status: str
+) -> dict[str, Any]:
+    all_categories = {
+        item["category"]
+        for key in ("removed", "residual", "introduced")
+        for item in (verification or {}).get(key, [])
+    }
+    file_categories = all_categories - DETERMINISTIC_CATEGORIES
+    package = output.suffix.lower() in {".docx", ".pptx"}
+    guarded_status = "incomplete" if status == "incomplete" else "passed"
+    return {
+        "deterministic_text": _finding_channel_status(
+            verification, DETERMINISTIC_CATEGORIES
+        ),
+        "file_provenance": _finding_channel_status(verification, file_categories),
+        "statistical": {
+            "status": "not_checked",
+            "reason": "No keyed statistical detector was configured for this run.",
+        },
+        "proprietary": {
+            "status": "not_checked",
+            "reason": "No proprietary or official detector was available to this run.",
+        },
+        "protected_values": {"status": guarded_status if package else "not_applicable"},
+        "package_structure": {
+            "status": guarded_status if package else "not_applicable"
+        },
+    }
+
 
 def build_record(
     source: Path,
@@ -16,15 +63,21 @@ def build_record(
     unavailable: list[str],
     status: str,
 ) -> dict[str, Any]:
+    engine_record = {
+        key: engine[key]
+        for key in ("name", "ref", "capabilities", "report", "exit_code")
+        if key in engine
+    }
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at": datetime.now(UTC).isoformat(),
         "source": source.name,
         "output": output.name,
         "status": status,
-        "engine": {key: engine[key] for key in ("name", "ref") if key in engine},
+        "engine": engine_record,
         "verification": verification
         or {"removed": [], "residual": [], "introduced": []},
+        "channels": _channels(output, verification, status),
         "not_checked": unavailable,
     }
 
@@ -43,9 +96,9 @@ def write_report(
 ) -> None:
     verification = record["verification"]
     status_text = {
-        "verified": "The checks that ran didn't find any medium or high residual marks.",
+        "checks_passed": "The configured checks passed without medium or high residual findings.",
         "findings": "The output still has medium or high findings. Review it before use.",
-        "incomplete": "Verification couldn't finish, so this output isn't verified.",
+        "incomplete": "The checks couldn't finish, so this output has an incomplete result.",
     }[record["status"]]
     lines = [
         "# vivid-clean verification record",
@@ -59,10 +112,19 @@ def write_report(
         "",
         "This record describes the checks vivid-clean ran. It isn't proof that a person wrote the file, and it can't promise what an outside detector will decide.",
         "",
+        "## Check channels",
+        "",
+        *[
+            f"- {name.replace('_', ' ')}: `{details['status']}`"
+            for name, details in record["channels"].items()
+        ],
+        "",
         "## Cleaning engine",
         "",
         f"- Name: `{record['engine'].get('name', 'unknown')}`",
         f"- Engine reference: `{record['engine'].get('ref', 'not recorded')}`",
+        f"- Capabilities recorded: `{'yes' if record['engine'].get('capabilities') else 'no'}`",
+        f"- Engine report recorded: `{'yes' if record['engine'].get('report') else 'no'}`",
         "",
         "## Removed",
         "",

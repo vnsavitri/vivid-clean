@@ -81,6 +81,29 @@ class VerificationTests(unittest.TestCase):
         result = diff(original, output)
         self.assertTrue(any("was:" in item["detail"] for item in result["residual"]))
 
+    def test_producer_hints_cover_multiple_model_vendors(self) -> None:
+        for index, producer in enumerate(
+            (
+                "Anthropic Claude",
+                "OpenAI Codex",
+                "Google Gemini",
+                "Microsoft Copilot",
+                "xAI Grok",
+                "Kimi",
+                "Qwen",
+                "DeepSeek",
+                "Mistral",
+            )
+        ):
+            with self.subTest(producer=producer):
+                path = self.root / f"producer-{index}.docx"
+                make_docx(path, True, producer)
+                hints = [
+                    item for item in scan(path) if item["category"] == "producer_hint"
+                ]
+                self.assertTrue(hints)
+                self.assertEqual(hints[0]["severity"], "high")
+
     def test_scrubber_removes_properties_and_keeps_body(self) -> None:
         path = self.root / "document.docx"
         make_docx(path, True)

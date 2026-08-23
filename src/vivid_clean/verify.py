@@ -16,6 +16,8 @@ AI_VENDORS = (
     "claude",
     "anthropic",
     "copilot",
+    "xai",
+    "grok",
     "gemini",
     "deepseek",
     "kimi",

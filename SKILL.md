@@ -1,11 +1,11 @@
 ---
 name: vivid-clean
-description: Prepare, humanise, rebuild and verify documents or media with the vivid-clean CLI. Use when a user asks to remove deterministic AI marks, strip provenance metadata, humanise a file, or make a verified copy.
+description: Prepare, humanise, preserve and check documents or media with the vivid-clean CLI. Use when a user asks to remove deterministic AI marks, strip provenance metadata, humanise a file, or make a checked copy.
 ---
 
 # vivid-clean
 
-Run the installed CLI. Don't rebuild the pipeline with bits of inline shell or Python. The CLI talks to the local cleaner, looks after the private session, scrubs rebuilt DOCX metadata, checks the result, and saves a report.
+Run the installed CLI. Don't rebuild the pipeline with bits of inline shell or Python. The CLI talks to the local cleaner, looks after the restricted session, edits Word and PowerPoint packages without rebuilding them, checks the result, and saves a report.
 
 ## Before starting
 
@@ -22,16 +22,19 @@ Run the installed CLI. Don't rebuild the pipeline with bits of inline shell or P
 vivid-clean prepare "/absolute/path/to/Draft.docx"
 ```
 
-The command starts the pinned local cleaner with a one-use token and prints a private session directory. It fails if neither watermarks-remover nor the installed anthropies fallback can produce an output. Don't bypass that failure by copying the original into the session.
+The command starts the pinned local cleaner with a one-use token and prints a restricted session directory. It fails if neither watermarks-remover nor the installed anthropies fallback can produce an output. Don't bypass that failure by copying the original into the session.
 
-For images, the session may have no `draft.md`. Skip the writing pass and finish the session.
+For PDF and images, the session has no `draft.md`. Skip the writing pass and finish the session. Ask for the editable source when the user wants a PDF humanised.
 
 ### 2. Humanise `draft.md`
 
 Open the `draft.md` path printed by the CLI. You're helping one person say what they already mean, so write like it:
 
+- Edit only inside the labelled blocks. Don't alter, move, add, or remove their HTML comment markers.
 - Preserve names, dates, numbers, quotations, citations, commitments, disclaimers, headings, tables, and list structure.
-- Keep the author's register and vocabulary. Don't flatten formal writing into chatty copy.
+- Establish the audience, purpose, register and regional spelling first. Ask when an unclear choice would materially change the edit.
+- Use a voice sample only when the user owns it or is authorised to use it. Don't imitate another identifiable person.
+- Keep the author's register and vocabulary. Preserve deliberate repetition, directness, dialect, dictation patterns and unusual phrasing unless the user asks for a change or the meaning is genuinely unclear.
 - Prefer plain wording and natural contractions where they fit.
 - Vary sentence length and structure. Remove repeated model-like patterns rather than applying mechanical substitutions.
 - Treat punctuation as voice, not a detection checklist. Keep or replace dashes according to the author's style and readability instead of banning one mark everywhere.
@@ -50,11 +53,12 @@ Use `--output "/absolute/path/to/result.docx"` when the user gave an exact desti
 
 The finish command:
 
-1. Rebuilds the requested format.
-2. Removes regenerated DOCX properties and package references.
-3. Compares the source with the output.
-4. Saves `<output>.vivid-clean-report.md`.
-5. Deletes the private session after a valid finish run, whether verification passes or fails.
+1. Puts revised DOCX and PPTX text back into the existing package structure.
+2. Refuses changed block markers, numbers, URLs, email addresses, or package structure.
+3. Removes residual DOCX properties and package references.
+4. Compares the source with the output.
+5. Saves `<output>.vivid-clean-report.md` with separate check channels and engine evidence.
+6. Deletes the restricted session after a valid finish run, whether checks pass or fail.
 
 Exit status `0` means the checks that ran found no medium or high residual marks. Status `1` means findings remain. Status `2` means a check couldn't finish. Don't present status `1` or `2` as done.
 
@@ -62,7 +66,7 @@ Exit status `0` means the checks that ran found no medium or high residual marks
 
 Give them the output and report paths. Use the report's exact scope:
 
-- Say “the checks that ran didn't find any medium or high residual marks” when the result is verified.
+- Say “the configured checks passed without medium or high residual findings” when the result is `checks_passed`.
 - Name any checks that weren't available.
 - Never say “there's no watermark” or “this will pass AI detection”.
 - Remind them to inspect formatting and meaning before sending the file.
@@ -71,13 +75,15 @@ Give them the output and report paths. Use the report's exact scope:
 
 | Format | Behaviour |
 | --- | --- |
-| DOCX | Full prepare, writing, rebuild, scrub and verification workflow |
-| PPTX | Best-effort writing and rebuild; require a close layout review |
-| PDF | Extract and write, then produce DOCX by default |
+| DOCX | Package-aware writing, scrub, structure check and verification; no Markdown rebuild |
+| PPTX | Package-aware slide and speaker-note writing with structure checks; no Markdown rebuild |
+| PDF | Deterministic cleaning only; output stays PDF and humanising needs the editable source |
 | TXT, MD | Direct writing and verification |
 | PNG, JPEG, WebP | Deterministic cleaning and verification; no writing pass |
 
 Don't batch directories in this release. Work through one file at a time so each one gets its own result and report.
+
+Run `vivid-clean cleanup --dry-run` to inspect expired sessions, or `vivid-clean cleanup` to remove validated sessions older than 24 hours.
 
 ## Persistent service override
 

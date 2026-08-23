@@ -8,6 +8,7 @@ VENDOR_DIR="${REPO_DIR}/vendor"
 VENV_DIR="${REPO_DIR}/.venv"
 INSTALL_HOME="${VIVID_CLEAN_USER_HOME:-${HOME}}"
 BIN_DIR="${INSTALL_HOME}/.local/bin"
+CODEX_SKILLS_HOME="${CODEX_HOME:-${INSTALL_HOME}/.codex}/skills"
 WATERMARKS_REMOVER_URL="https://github.com/guillaumemeyer/watermarks-remover.git"
 WATERMARKS_REMOVER_REF="104aacd212d7a262c32bd7f1f4aa380c26a5d4b5"
 ANTHROPIES_URL="https://github.com/CharlesHoskinson/anthropies.git"
@@ -72,8 +73,8 @@ install_python() {
     info "Creating ${VENV_DIR}..."
     python3 -m venv "${VENV_DIR}"
   fi
-  info "Installing vivid-clean and document support..."
-  "${VENV_DIR}/bin/python" -m pip install --disable-pip-version-check --quiet -e "${REPO_DIR}[documents]"
+  info "Installing vivid-clean..."
+  "${VENV_DIR}/bin/python" -m pip install --disable-pip-version-check --quiet -e "${REPO_DIR}"
   mkdir -p "${BIN_DIR}"
   local command_link="${BIN_DIR}/vivid-clean"
   if [[ -e "${command_link}" && ! -L "${command_link}" ]]; then
@@ -107,27 +108,31 @@ install_anthropies_if_available() {
 install_skill_copy() {
   local base="$1"
   local target="${base}/vivid-clean"
-  mkdir -p "${target}"
-  cp "${REPO_DIR}/SKILL.md" "${target}/SKILL.md"
-  cp "${REPO_DIR}/PROMPT.md" "${target}/PROMPT.md"
+  local stage
+  local backup=""
+  mkdir -p "${base}"
+  stage="$(mktemp -d "${base}/.vivid-clean.stage.XXXXXX")"
+  cp "${REPO_DIR}/SKILL.md" "${stage}/SKILL.md"
+  cp "${REPO_DIR}/PROMPT.md" "${stage}/PROMPT.md"
+  if [[ -e "${target}" || -L "${target}" ]]; then
+    backup="${base}/vivid-clean.backup.$(date -u +%Y%m%dT%H%M%SZ).$$"
+    mv "${target}" "${backup}"
+  fi
+  if ! mv "${stage}" "${target}"; then
+    if [[ -n "${backup}" && -e "${backup}" ]]; then
+      mv "${backup}" "${target}"
+    fi
+    printf "Error: couldn't install the skill at %s.\n" "${target}" >&2
+    exit 1
+  fi
 }
 
 install_skills() {
   install_skill_copy "${INSTALL_HOME}/.agents/skills"
   install_skill_copy "${INSTALL_HOME}/.cursor/skills"
   install_skill_copy "${INSTALL_HOME}/.claude/skills"
-  install_skill_copy "${INSTALL_HOME}/.codex/skills"
+  install_skill_copy "${CODEX_SKILLS_HOME}"
   info "Installed the skill for compatible agents, Cursor, Claude and Codex."
-}
-
-check_pandoc() {
-  if command -v pandoc >/dev/null 2>&1; then
-    info "pandoc: $(command -v pandoc)"
-    return 0
-  fi
-  warn "pandoc isn't installed. DOCX, PPTX and PDF rebuilds won't work until it's installed."
-  warn "macOS: brew install pandoc"
-  warn "Debian/Ubuntu: sudo apt-get install pandoc"
 }
 
 print_next_steps() {
@@ -143,13 +148,24 @@ print_next_steps() {
 
 main() {
   info "Installing vivid-clean..."
+  if [[ "${1:-}" == "--skills-only" ]]; then
+    if [[ "$#" -ne 1 ]]; then
+      printf "Error: --skills-only doesn't accept additional arguments.\n" >&2
+      exit 2
+    fi
+    install_skills
+    return 0
+  fi
+  if [[ "$#" -ne 0 ]]; then
+    printf 'Usage: %s [--skills-only]\n' "$0" >&2
+    exit 2
+  fi
   check_command git
   check_python
   checkout_pinned "watermarks-remover" "${WATERMARKS_REMOVER_URL}" "${WATERMARKS_REMOVER_REF}"
   install_python
   install_anthropies_if_available
   install_skills
-  check_pandoc
   print_next_steps
 }
 

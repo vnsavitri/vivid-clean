@@ -17,12 +17,13 @@ from pathlib import Path
 from typing import Any
 
 from .docx import scrub_docx
+from .package_edit import PackageEditError, apply_package_draft, prepare_package_draft
 from .report import build_record, write_report
 from .service import ServiceError, WatermarksClient
 from .verify import VerificationError, diff, failing_findings
 
-EDITABLE = {".txt", ".md", ".docx", ".pptx", ".pdf"}
-DIRECT_MEDIA = {".png", ".jpg", ".jpeg", ".webp"}
+EDITABLE = {".txt", ".md", ".docx", ".pptx"}
+DIRECT_MEDIA = {".pdf", ".png", ".jpg", ".jpeg", ".webp"}
 WATERMARKS_REMOVER_REF = "104aacd212d7a262c32bd7f1f4aa380c26a5d4b5"
 ANTHROPIES_REF = "6d1dba6870b9a01a1c088e18d8eed44366bbbe36"
 
@@ -54,11 +55,13 @@ def managed_watermarks_client(
     if explicit_url:
         client = WatermarksClient(explicit_url)
         health = client.health()
+        capabilities = client.capabilities()
         yield (
             client,
             {
                 "name": "watermarks-remover",
                 "ref": f"service-reported:{health.get('version', 'unknown')}",
+                "capabilities": capabilities,
             },
         )
         return
@@ -92,7 +95,14 @@ def managed_watermarks_client(
                 time.sleep(0.1)
         else:
             raise ServiceError("the pinned cleaning service didn't become ready")
-        yield client, {"name": "watermarks-remover", "ref": WATERMARKS_REMOVER_REF}
+        yield (
+            client,
+            {
+                "name": "watermarks-remover",
+                "ref": WATERMARKS_REMOVER_REF,
+                "capabilities": client.capabilities(),
+            },
+        )
     finally:
         if process.poll() is None:
             process.terminate()
@@ -127,21 +137,34 @@ def _fallback_anthropies(source: Path, destination: Path, repo: Path) -> dict[st
     if not destination.is_file() or destination.stat().st_size == 0:
         message = (result.stderr or result.stdout).strip()[:500]
         raise WorkflowError(f"anthropies didn't produce a cleaned file: {message}")
-    return {"name": "anthropies", "ref": ANTHROPIES_REF, "exit_code": result.returncode}
+    return {
+        "name": "anthropies",
+        "ref": ANTHROPIES_REF,
+        "exit_code": result.returncode,
+        "capabilities": {
+            "scope": "specialist fallback",
+            "vendor_focus": "Anthropic",
+            "equivalent_to_primary": False,
+        },
+        "report": {
+            "status": "fallback",
+            "note": "The primary multi-vendor engine wasn't available.",
+        },
+    }
 
 
-def _extract(cleaned: Path, draft: Path, suffix: str) -> bool:
+def _extract(cleaned: Path, draft: Path, suffix: str) -> tuple[bool, dict[str, Any]]:
     if suffix in (".txt", ".md"):
         shutil.copyfile(cleaned, draft)
-        return True
-    if suffix in EDITABLE:
-        executable = find_tool("markitdown")
-        if not executable:
-            raise WorkflowError("markitdown isn't installed; run ./install.sh")
-        _run([executable, str(cleaned), "-o", str(draft)])
-        return True
+        return True, {"mode": "plain_text"}
+    if suffix in (".docx", ".pptx"):
+        try:
+            editor = prepare_package_draft(cleaned, draft, suffix)
+        except PackageEditError as exc:
+            raise WorkflowError(str(exc)) from exc
+        return True, editor
     if suffix in DIRECT_MEDIA:
-        return False
+        return False, {"mode": "copy_only"}
     raise WorkflowError(f"{suffix or 'this file type'} isn't supported")
 
 
@@ -162,13 +185,14 @@ def prepare(source: Path, repo: Path) -> Path:
         except ServiceError:
             engine = _fallback_anthropies(source, cleaned, repo)
         draft = session / "draft.md"
-        editable = _extract(cleaned, draft, source.suffix.lower())
+        editable, editor = _extract(cleaned, draft, source.suffix.lower())
         manifest = {
             "schema_version": 1,
             "source": str(source),
             "cleaned": str(cleaned),
             "draft": str(draft) if editable else None,
             "editable": editable,
+            "editor": editor,
             "source_suffix": source.suffix.lower(),
             "engine": engine,
         }
@@ -186,8 +210,36 @@ def _default_output(source: Path, suffix: str) -> Path:
         raise WorkflowError(
             "suffix must be a non-empty filename fragment without path separators"
         )
-    output_suffix = ".docx" if source.suffix.lower() == ".pdf" else source.suffix
-    return source.with_name(f"{source.stem}{suffix}{output_suffix}")
+    return source.with_name(f"{source.stem}{suffix}{source.suffix}")
+
+
+def cleanup_sessions(older_than_hours: float = 24, dry_run: bool = False) -> list[Path]:
+    """Remove expired, validated vivid-clean sessions from the system temp folder."""
+    if older_than_hours < 0:
+        raise WorkflowError("older-than must be zero or greater")
+    root = Path(tempfile.gettempdir()).resolve()
+    threshold = time.time() - (older_than_hours * 60 * 60)
+    removed: list[Path] = []
+    for candidate in sorted(root.glob("vivid-clean-*")):
+        if candidate.is_symlink() or not candidate.is_dir():
+            continue
+        manifest_path = candidate / "session.json"
+        try:
+            if manifest_path.stat().st_mtime > threshold:
+                continue
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            cleaned = Path(manifest["cleaned"]).resolve()
+            if (
+                manifest.get("schema_version") != 1
+                or cleaned.parent != candidate.resolve()
+            ):
+                continue
+        except (OSError, KeyError, TypeError, json.JSONDecodeError):
+            continue
+        removed.append(candidate)
+        if not dry_run:
+            shutil.rmtree(candidate)
+    return removed
 
 
 def finish(
@@ -219,21 +271,24 @@ def finish(
             draft = Path(manifest["draft"])
             if not draft.is_file() or not draft.read_text(encoding="utf-8").strip():
                 raise WorkflowError("draft.md is missing or empty")
-            if source.suffix.lower() in (".txt", ".md"):
+            editor = manifest.get("editor", {})
+            if editor.get("mode") == "plain_text":
                 shutil.copyfile(draft, destination)
+            elif editor.get("mode") == "ooxml":
+                try:
+                    apply_package_draft(cleaned, draft, destination, editor)
+                except PackageEditError as exc:
+                    raise WorkflowError(str(exc)) from exc
             else:
-                pandoc = find_tool("pandoc")
-                if not pandoc:
-                    raise WorkflowError(
-                        "pandoc isn't installed; run vivid-clean doctor for setup help"
-                    )
-                _run([pandoc, "--sandbox", str(draft), "-o", str(destination)])
+                raise WorkflowError(
+                    "this session predates format-preserving editing; prepare the source again"
+                )
         else:
             shutil.copyfile(cleaned, destination)
         if destination.suffix.lower() == ".docx":
             scrub_docx(destination)
         verification = diff(source, destination)
-        status = "findings" if failing_findings(verification) else "verified"
+        status = "findings" if failing_findings(verification) else "checks_passed"
         record = build_record(
             source, destination, manifest["engine"], verification, unavailable, status
         )

@@ -1,14 +1,23 @@
 # Roadmap
 
-## Formatting-preserving document editing
+## Document fidelity
 
-The Markdown round-trip is the biggest risk still hanging around. It can flatten Word runs, footnotes, fields, tables, slide layouts, speaker notes, and legal formatting.
+DOCX and PPTX writing now happens inside the cleaned OOXML package. The editor preserves package members, paragraph and run structures, styles, tables, hyperlinks, slide shapes and speaker-note structures. It doesn't rebuild the document through Markdown.
 
-Before building an in-place editor, run a small spike that answers:
+The next fidelity fixtures should cover fields, tracked changes, comments, footnotes, endnotes, charts, embedded workbooks, animations and right-to-left documents. When a structure can't be edited safely, the run should stop and explain why.
 
-- Can `python-docx` replace text across runs without losing styles, fields, comments, tracked changes, links, or numbering?
-- Can `python-pptx` update text frames while preserving geometry, theme inheritance, notes, and animation references?
-- Which structures must make the run fail rather than accept a lossy edit?
-- What before-and-after fixtures prove meaning and package structure survived?
+PDF stays PDF for deterministic cleaning. Humanising still needs an editable source because a reliable general-purpose PDF text editor is outside this project's scope.
 
-The spike should produce an architecture note and seeded fixtures. Don't ship an in-place rewrite until those failure rules are settled.
+## Distribution
+
+- Publish tagged releases with checksums.
+- Add `pipx` and `uv tool` installation paths.
+- Add Windows CI and installation guidance.
+- Add explicit skill install and uninstall commands.
+
+## Workflow
+
+- Add safe directory and batch processing after single-file reports are stable.
+- Add a machine-readable session listing command.
+- Add optional local-model adapters without silently sending text to a hosted service.
+- Keep cleaning engines behind one capability interface so vendor-specific fallbacks can't pretend to be equivalent.
