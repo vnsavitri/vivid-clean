@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vivid-clean"
+version = "0.1.0"
+description = "A local-first document cleaning and verification workflow"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "Vivid Savitri"}]
+dependencies = []
+
+[project.optional-dependencies]
+documents = ["markitdown[docx,pdf,pptx]==0.1.7"]
+dev = ["ruff>=0.12,<1"]
+
+[project.scripts]
+vivid-clean = "vivid_clean.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+target-version = "py311"

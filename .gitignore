@@ -32,3 +32,5 @@ tmp/
 
 # Generated outputs
 *_vivid.*
+*.vivid-clean-report.md
+*.vivid-clean-report.json
