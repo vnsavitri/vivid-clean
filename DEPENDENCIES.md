@@ -1,6 +1,6 @@
 # Audited dependencies
 
-The installer checks out exact commits. Updating one of these pins needs a source review and a passing CI run.
+The installer checks out exact commits. If you update one, review the source and make sure CI passes first.
 
 | Project | Pinned commit | Licence | Interface checked |
 | --- | --- | --- | --- |

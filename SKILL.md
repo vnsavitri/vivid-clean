@@ -5,7 +5,7 @@ description: Prepare, humanise, rebuild and verify documents or media with the v
 
 # vivid-clean
 
-Use the installed CLI instead of reimplementing the pipeline with inline shell or Python. The CLI is the trust boundary: it talks to the local cleaner, manages the private session, scrubs rebuilt DOCX metadata, verifies the result, and saves a report.
+Run the installed CLI. Don't rebuild the pipeline with bits of inline shell or Python. The CLI talks to the local cleaner, looks after the private session, scrubs rebuilt DOCX metadata, checks the result, and saves a report.
 
 ## Before starting
 
@@ -28,7 +28,7 @@ For images, the session may have no `draft.md`. Skip the writing pass and finish
 
 ### 2. Humanise `draft.md`
 
-Open the `draft.md` path printed by the CLI. Revise it like you're helping one person say what they already mean:
+Open the `draft.md` path printed by the CLI. You're helping one person say what they already mean, so write like it:
 
 - Preserve names, dates, numbers, quotations, citations, commitments, disclaimers, headings, tables, and list structure.
 - Keep the author's register and vocabulary. Don't flatten formal writing into chatty copy.
@@ -62,7 +62,7 @@ Exit status `0` means the checks that ran found no medium or high residual marks
 
 Give them the output and report paths. Use the report's exact scope:
 
-- Say “no medium or high residual marks were detected by the checks that ran” when the result is verified.
+- Say “the checks that ran didn't find any medium or high residual marks” when the result is verified.
 - Name any checks that weren't available.
 - Never say “there's no watermark” or “this will pass AI detection”.
 - Remind them to inspect formatting and meaning before sending the file.
@@ -77,7 +77,7 @@ Give them the output and report paths. Use the report's exact scope:
 | TXT, MD | Direct writing and verification |
 | PNG, JPEG, WebP | Deterministic cleaning and verification; no writing pass |
 
-Don't batch directories in this release. Process one file at a time so every file has its own result and report.
+Don't batch directories in this release. Work through one file at a time so each one gets its own result and report.
 
 ## Persistent service override
 

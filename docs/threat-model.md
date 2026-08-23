@@ -7,7 +7,7 @@
 
 ## Purpose and system
 
-vivid-clean removes deterministic provenance marks its available checks can identify and gives people a structured way to revise their own AI-assisted writing. Trust depends on precise claims, a pinned supply chain, and failure states that stay visible.
+vivid-clean removes deterministic provenance marks its available checks can identify and gives people a clear way to revise their own AI-assisted writing. The trust model is simple: make precise claims, pin the supply chain, and don't hide a failed check.
 
 ```text
 install:
@@ -24,7 +24,7 @@ run:
     -> output plus scoped verification record
 ```
 
-The source document, author identity, editing history, provenance metadata, host machine, and the user's compliance standing are all assets worth protecting.
+The source document, author identity, editing history, provenance metadata, host machine, and the user's standing under any relevant rules all need protection.
 
 ## Threat register
 

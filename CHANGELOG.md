@@ -8,7 +8,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 - A Python CLI for preparing, finishing, checking, and diagnosing the workflow.
 - Independent verification, DOCX property scrubbing, scoped sidecar reports, and macOS/Linux CI.
-- Skill installation for agents, Claude Code, and Codex.
+- Skill installation for Agent Skills-compatible tools, Cursor, Claude Code, and Codex.
 - Security, contribution, dependency, threat-model, and roadmap documentation.
 
 ### Changed
@@ -21,4 +21,3 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 ## 0.0.1 - 2026-08-22
 
 - Published the first setup guide, assistant skill, accessibility framing, and background reading.
-

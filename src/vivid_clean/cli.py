@@ -106,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(f"Edit {draft}, then run: vivid-clean finish {session}")
             else:
                 print(
-                    f"No text rewrite is available for this format. Run: vivid-clean finish {session}"
+                    f"This format doesn't have a text rewrite step. Run: vivid-clean finish {session}"
                 )
             return 0
         if args.command == "finish":

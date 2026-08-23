@@ -1,19 +1,19 @@
 # vivid-clean
 
-![vivid-clean](./gh-cover.jpg)
+![vivid-clean: local-first document cleaning](./gh-cover2.png)
 
 [![CI](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml/badge.svg)](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-00B67A?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](./pyproject.toml)
 [![Local metadata cleaning](https://img.shields.io/badge/metadata%20cleaning-local-5B6CFF?style=flat-square)](#privacy-in-plain-english)
 
-`vivid-clean` removes deterministic provenance marks it can identify, helps you revise AI-assisted writing in your own voice, then checks the exported file for anything left behind.
+`vivid-clean` removes deterministic provenance marks it can identify, helps you revise AI-assisted writing in your own voice, then checks the exported file and tells you what actually happened.
 
-It exists for people who use AI as an accessibility aid, a writing aid, or part of ordinary work. A marker can't tell the difference between outsourced thinking and help with spelling, structure, fatigue, or a disability.
+I built it for people who use AI as an accessibility aid, a writing aid, or simply part of how they get work done. A marker can't tell the difference between outsourcing your thinking and getting help with spelling, structure, fatigue, or a disability. That distinction matters.
 
 ## What you get
 
-This repo now ships a proper command-line tool as well as an assistant skill:
+You get a command-line tool and an assistant skill. Together, they handle the fiddly bits:
 
 - A pinned, local metadata-cleaning engine.
 - A private working copy for the humanising pass.
@@ -21,11 +21,11 @@ This repo now ships a proper command-line tool as well as an assistant skill:
 - A verification gate that fails when checks can't finish.
 - A readable report beside every finished file.
 
-The report says what was checked, what was removed, what remains, and what wasn't available. It won't call a file universally “clean”, because no honest tool can know what every outside detector will decide.
+The report says what was checked, what came out, what remains, and which checks weren't available. It won't call a file universally “clean”. No honest tool knows what every outside detector will decide.
 
 ## Install
 
-vivid-clean supports macOS and Linux. You need Git and Python 3.11 or newer. Pandoc is needed when rebuilding Word, PowerPoint, or PDF-derived documents.
+vivid-clean supports macOS and Linux. You'll need Git and Python 3.11 or newer. You'll also need Pandoc to rebuild Word, PowerPoint, or PDF-derived documents.
 
 ```bash
 git clone https://github.com/vnsavitri/vivid-clean.git
@@ -38,12 +38,12 @@ The installer creates `.venv` inside the repo, installs the Word, PowerPoint, an
 
 | Assistant | Skill location |
 | --- | --- |
-| Agent Skills compatible tools | `~/.agents/skills/vivid-clean/` |
+| Agent Skills-compatible tools | `~/.agents/skills/vivid-clean/` |
 | Cursor | `~/.cursor/skills/vivid-clean/` |
 | Claude Code | `~/.claude/skills/vivid-clean/` |
 | Codex | `~/.codex/skills/vivid-clean/` |
 
-If Node 22 and pnpm are already installed, the installer builds anthropies as a fallback. Missing Node tooling won't break the core installation.
+If you've already got Node 22 and pnpm, the installer builds anthropies as a fallback. If you haven't, no drama. The core installation still works.
 
 Add `~/.local/bin` to your `PATH` if it isn't there already, then check the setup:
 
@@ -53,7 +53,7 @@ vivid-clean doctor
 
 ## Use it with an assistant
 
-Ask your assistant:
+Give your assistant the file path and say what you want:
 
 > Use the vivid-clean skill on `/full/path/to/Draft.docx`. Keep my meaning and formatting as close as possible, and use a neutral `_reviewed` suffix.
 
@@ -87,15 +87,15 @@ Exit status `0` means the applicable checks finished without medium or high resi
 | `.txt`, `.md` | Local deterministic cleaning, editable text pass, verification | Statistical detectors remain outside the default checks |
 | `.png`, `.jpg`, `.jpeg`, `.webp` | Local deterministic cleaning and verification | Pixel-level watermarks need optional upstream backends |
 
-Start with an editable source when you have one. Keep the original, check the result, and pay particular attention to tables, footnotes, slide layouts, legal wording, names, dates, and numbers.
+Start with an editable source when you have one. Keep the original and check the result. Tables, footnotes, slide layouts, legal wording, names, dates, and numbers deserve an extra look.
 
 ## Privacy in plain English
 
-Metadata cleaning, extraction, rebuilding, and verification run on your computer. The humanising pass happens through whichever assistant you choose. If that assistant is hosted, the text may be sent to its provider under their retention and privacy terms.
+Here's the honest version. Metadata cleaning, extraction, rebuilding, and verification run on your computer. Humanising happens wherever your chosen assistant runs. If it's hosted, your text may go to that provider under its privacy and retention terms.
 
 Advanced users can point the CLI at a persistent loopback service with `WATERMARKS_SERVICE_URL`. Remote addresses are rejected so a configuration mistake can't upload the file. If the service uses `WATERMARKS_SERVER_API_KEY`, export the same value for the CLI. Don't put the token in a command argument, document, or report. A separately started service's commit can't be independently verified, so its self-reported version is recorded instead of the audited local SHA.
 
-For a fully local workflow, use a locally hosted model such as Ollama to edit the prepared `draft.md`, then run `vivid-clean finish`. A local model can improve privacy, but it doesn't guarantee that a watermark is gone or that a detector will classify the result differently.
+Want the whole workflow to stay local? Use a local model such as Ollama to edit the prepared `draft.md`, then run `vivid-clean finish`. That keeps the text on your computer. It still can't guarantee that every watermark is gone or predict what a detector will say.
 
 ## Limits and responsible use
 
@@ -109,9 +109,9 @@ The detailed assumptions and failure cases are in the [threat model](./docs/thre
 
 ## Why this exists
 
-AI can make writing possible, or simply less exhausting, for people with dyslexia, ADHD, autism, learning disabilities, injury, fatigue, or a packed day. Treating every assisted sentence as deception erases that difference.
+I built vivid-clean because AI can make writing possible, or simply less exhausting, for people with dyslexia, ADHD, autism, learning disabilities, injury, fatigue, or a packed day. Treating every assisted sentence as deception erases why people use these tools in the first place.
 
-The longer argument is in [AI watermarking is the new scarlet letter](https://www.linkedin.com/pulse/ai-watermarking-new-scarlet-letter-vivid-n-savitri-npzpc).
+I wrote the longer argument here: [AI watermarking is the new scarlet letter](https://www.linkedin.com/pulse/ai-watermarking-new-scarlet-letter-vivid-n-savitri-npzpc).
 
 ## Project notes
 

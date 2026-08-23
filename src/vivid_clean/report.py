@@ -43,7 +43,7 @@ def write_report(
 ) -> None:
     verification = record["verification"]
     status_text = {
-        "verified": "No medium or high residual marks were detected by the checks that ran.",
+        "verified": "The checks that ran didn't find any medium or high residual marks.",
         "findings": "The output still has medium or high findings. Review it before use.",
         "incomplete": "Verification couldn't finish, so this output isn't verified.",
     }[record["status"]]
@@ -80,7 +80,7 @@ def write_report(
         "",
         *(
             [f"- {item}" for item in record["not_checked"]]
-            or ["- Nothing was marked unavailable."]
+            or ["- All configured checks were available."]
         ),
         "",
         "The report stores filenames and detector results, not document contents or full local paths.",

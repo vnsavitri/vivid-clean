@@ -89,12 +89,12 @@ install_python() {
 
 install_anthropies_if_available() {
   if ! command -v node >/dev/null 2>&1 || ! node -e 'process.exit(Number(process.versions.node.split(".")[0]) >= 22 ? 0 : 1)'; then
-    warn "anthropies wasn’t installed because Node 22+ isn’t available. The core tool still works."
+    warn "anthropies wasn't installed because Node 22+ isn't available. The core tool still works."
     warn "Install Node 22 and pnpm, then run ./install.sh again to enable the fallback."
     return 0
   fi
   if ! command -v pnpm >/dev/null 2>&1; then
-    warn "anthropies wasn’t installed because pnpm isn’t available. The core tool still works."
+    warn "anthropies wasn't installed because pnpm isn't available. The core tool still works."
     warn "Run corepack enable (or install pnpm), then run ./install.sh again."
     return 0
   fi
@@ -125,7 +125,7 @@ check_pandoc() {
     info "pandoc: $(command -v pandoc)"
     return 0
   fi
-  warn "pandoc isn’t installed. DOCX, PPTX and PDF rebuilds won’t work until it is."
+  warn "pandoc isn't installed. DOCX, PPTX and PDF rebuilds won't work until it's installed."
   warn "macOS: brew install pandoc"
   warn "Debian/Ubuntu: sudo apt-get install pandoc"
 }

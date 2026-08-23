@@ -1,6 +1,6 @@
 # Copy-paste setup prompt
 
-Paste this into a coding assistant that can run terminal commands:
+Don't fancy doing the setup by hand? Paste this into a coding assistant that can run terminal commands:
 
 ```text
 Please install vivid-clean from https://github.com/vnsavitri/vivid-clean.
@@ -22,4 +22,4 @@ To use it later:
 Use the vivid-clean skill on "/full/path/to/my/file.docx". Preserve my meaning, ask before making a substantive edit, and use the suffix "_reviewed".
 ```
 
-The tool will create a separate output and a Markdown verification record. That record covers the checks that ran; it isn't a promise about every watermark or AI detector.
+You'll get a separate output and a Markdown verification record. The record covers the checks that ran. It can't promise anything about every watermark or AI detector in existence.

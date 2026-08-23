@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for taking the time. The safest contributions here are small enough to review and come with a fixture that proves the behaviour.
+Thanks for pitching in. Keep changes small enough to review, and add a fixture that proves the behaviour. It saves everyone a guessing game later.
 
 ## Set up
 
@@ -23,4 +23,4 @@ Run `shellcheck install.sh` when you change the installer.
 - Keep privacy and result claims consistent across the README, setup prompt, skill, report wording, and threat model.
 - Update `DEPENDENCIES.md` when changing an upstream pin, after reviewing its source, licence, and interface.
 
-Formatting-preserving DOCX or PPTX editing needs a design spike before implementation. See [ROADMAP.md](./ROADMAP.md).
+Formatting-preserving DOCX or PPTX editing needs a design spike before anybody starts building it. See [ROADMAP.md](./ROADMAP.md).
