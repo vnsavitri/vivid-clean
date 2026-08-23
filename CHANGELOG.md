@@ -6,7 +6,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ### Changed
 
-- Updated the workflow diagram to cover images, editable-file drafts and both writing modes.
+- Updated the workflow diagram to cover images, editable-file drafts and both writing modes, with the image limits stated plainly.
 - Put the beginner installation prompt in a one-click copy box on GitHub.
 
 ## 0.3.0 - 2026-08-23

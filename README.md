@@ -109,6 +109,8 @@ Your original stays put. vivid-clean makes a restricted working copy, handles th
 
 ![How vivid-clean keeps the original file untouched, cleans known marks locally, protects values during the writing pass, returns text to the same document format, and saves a checked copy with a report](./docs/assets/vivid-clean-workflow.svg)
 
+For images, “clean” means removing recognised metadata and provenance fields. vivid-clean v0.3.0 doesn't remove visible logos or pixel-level watermarks, and it doesn't send the image to a multimodal model. Those checks stay `not_checked` in the report.
+
 The writing pass follows the assistant you choose. A local model keeps that text on your computer. A hosted assistant may receive the extracted text under that provider's privacy and retention terms.
 
 ## Use it with an assistant
@@ -168,9 +170,17 @@ vivid-clean cleanup --older-than 0
 | `.pptx` | Local cleaning, package-aware slide and speaker-note editing, structural check and verification | Rewording can still change line wrapping inside an unchanged text box |
 | `.pdf` | Local deterministic cleaning and verification; output stays PDF | Humanising needs the editable source because vivid-clean won't fake a safe PDF reconstruction |
 | `.txt`, `.md` | Local deterministic cleaning, editable text pass, verification | Statistical detectors remain outside the default checks |
-| `.png`, `.jpg`, `.jpeg`, `.webp` | Local deterministic cleaning and verification | Pixel-level watermarks need optional upstream backends |
+| `.png`, `.jpg`, `.jpeg`, `.webp` | Local metadata and provenance cleaning, followed by verification; no model required | Pixel-level and visible watermarks aren't removed in v0.3.0 |
 
 Start with an editable source when you have one. Keep the original and check the result. Tables, fields, tracked changes, legal wording and dense slide layouts deserve an extra look.
+
+### Images: what vivid-clean actually cleans
+
+vivid-clean doesn't ask you to choose a model for PNG, JPEG or WebP files. The current image path is deterministic: the pinned cleaner removes metadata and provenance fields it recognises, saves a new image, then verifies that output. The writing pass is skipped.
+
+It doesn't send the image through Kimi, DeepSeek, Qwen or another multimodal model. Those aren't supported pixel-removal backends. A visible logo, an imperceptible pattern baked into the pixels, and other pixel-level marks aren't removed by vivid-clean v0.3.0. The report leaves that check as `not_checked` instead of guessing.
+
+Pixel removal may come later as a separate, opt-in restoration step. It needs an exact backend name, local-versus-hosted disclosure, before-and-after checks, and a warning that generated pixels can change the image. Until that exists and passes real tests, vivid-clean won't claim it.
 
 ## Privacy in plain English
 
