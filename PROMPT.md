@@ -1,43 +1,25 @@
-# Copy-paste prompt for your AI assistant
+# Copy-paste setup prompt
 
-If you would rather not type commands yourself, copy and paste the block below into Claude Code, Codex, ChatGPT, or any AI assistant that can run commands. It will install vivid-clean and run it for you.
-
-## One-time setup prompt
+Paste this into a coding assistant that can run terminal commands:
 
 ```text
-Please install the vivid-clean tool from https://github.com/vnsavitri/vivid-clean so I can remove AI watermarks and AI-writing tells from my documents.
+Please install vivid-clean from https://github.com/vnsavitri/vivid-clean.
 
-Do this step by step, and tell me what you are doing at each step:
+1. Clone it into ~/vivid-clean if it isn't already installed.
+2. Read install.sh, then run it from the repo.
+3. Don't install Pandoc or change my shell profile without asking me first. If Pandoc is missing, show me the right command for my system.
+4. Run vivid-clean doctor and explain anything that's unavailable. The cleaner should start privately when a file is prepared, so don't leave a background service running.
+5. Confirm that the vivid-clean skill was copied into the skill directory used by this assistant.
 
-1. Clone the repo to ~/vivid-clean.
-2. Run ./install.sh inside that folder.
-3. Check whether pandoc is installed. If it is missing, ask me before installing it, and suggest the right command for my system (for example, "brew install pandoc" on a Mac with Homebrew, or "sudo apt-get install pandoc" on Ubuntu/Debian).
-4. Start the watermarks-remover service in the background on 127.0.0.1:8765, or tell me how to keep it running.
-5. Install the skill so I can trigger it with /vivid-clean.
+Metadata cleaning and verification run locally. Tell me clearly if the writing pass will send text through a hosted assistant, and offer a local-model route if I want the text to stay on my computer.
 
-Once setup is done, ask me which file I would like to clean first.
+Once setup is working, ask which file I want to prepare first.
 ```
 
-## Cleaning a file
-
-After setup, whenever you want to clean a document, paste this:
+To use it later:
 
 ```text
-Please run /vivid-clean on "[full path to your file]".
+Use the vivid-clean skill on "/full/path/to/my/file.docx". Preserve my meaning, ask before making a substantive edit, and use the suffix "_reviewed".
 ```
 
-For example:
-
-```text
-Please run /vivid-clean on "/Users/vnsavitri/Documents/Cover_Letter.docx".
-```
-
-Your assistant will create a cleaned file next to the original with `_vivid` in the name, such as `Cover_Letter_vivid.docx`.
-
-## Optional: stronger cleaning
-
-If the file was drafted with ChatGPT or Claude and you want the strongest result, ask your assistant to first route the text through a non-watermarked open model like Kimi, DeepSeek, GLM, or Qwen, then run vivid-clean.
-
-```text
-This file was edited with ChatGPT. Please first rewrite it through a non-watermarked open model to break any statistical watermark pattern, then run /vivid-clean on the result.
-```
+The tool will create a separate output and a Markdown verification record. That record covers the checks that ran; it isn't a promise about every watermark or AI detector.

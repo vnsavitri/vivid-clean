@@ -1,186 +1,93 @@
 ---
 name: vivid-clean
-description: Remove deterministic AI marks and AI-writing tells from documents and media. Use when the user gives you files and asks to "remove the watermark", "humanise", "strip AI marks", "make it less like AI", or wants a _vivid version of a document.
+description: Prepare, humanise, rebuild and verify documents or media with the vivid-clean CLI. Use when a user asks to remove deterministic AI marks, strip provenance metadata, humanise a file, or make a verified copy.
 ---
 
 # vivid-clean
 
-**Install name:** `vivid-clean`
-**Source repo:** https://github.com/vnsavitri/vivid-clean
+Use the installed CLI instead of reimplementing the pipeline with inline shell or Python. The CLI is the trust boundary: it talks to the local cleaner, manages the private session, scrubs rebuilt DOCX metadata, verifies the result, and saves a report.
 
-A document- and media-oriented wrapper around the `/human` skill. Use it when you need to take an existing file drafted with an AI assistant and remove both:
+## Before starting
 
-1. **Deterministic marks** — invisible Unicode, C2PA/EXIF/XMP metadata, doc properties, and other hard-bound provenance.
-2. **AI writing tells / statistical watermarks** — the `/human` skill rewrites the text to sound like a person and to degrade token-sampling watermark patterns.
-
-This skill combines two tools into one pipeline:
-- **[watermarks-remover](https://github.com/guillaumemeyer/watermarks-remover)** — Layer A Unicode scrub + file/metadata cleaner for many formats.
-- **anthropies** (legacy fallback) — focused on Anthropic/Claude-specific deterministic marks.
-
-## Triggers
-
-- `/vivid-clean`
-- "remove watermark"
-- "remove watermark from this docx"
-- "humanise this document"
-- "vivid clean these files"
-- "make this docx less like AI"
-- "de-watermark"
-- "clean up AI tells"
-- "strip AI marks"
-- "remove AI provenance"
-
-## When to use
-
-- The user gives you one or more files and asks you to "remove the watermark", "humanise", "strip AI marks", or "make it less like AI".
-- The user wants a `_vivid` version of a DOCX, PPTX, PDF, TXT, MD, or image file.
-- The user is finalising external-facing documents (applications, letters, reports, emails) drafted with AI and wants them to sound like a person wrote them.
-
-## Supported formats
-
-| Format | Notes |
-|--------|-------|
-| **DOCX** | Microsoft Word; most common use case |
-| **PPTX** | PowerPoint slides and notes |
-| **PDF** | Text extraction; output is DOCX by default |
-| **TXT** | Plain text |
-| **MD** | Markdown |
-| **Images** | PNG, JPEG, WebP, AVIF, HEIC, BMP, GIF, TIFF, SVG — metadata/C2PA strip only; pixel watermark removal is optional and heavy |
+1. Confirm the user owns the file or is allowed to edit it.
+2. Run `vivid-clean doctor` if the setup hasn't been checked in this environment.
+3. Never overwrite the source.
+4. Ask for a suffix only when the user hasn't expressed a preference and the filename matters. `_vivid` is the compatibility default, but it advertises the tool. A neutral suffix such as `_reviewed` is often better.
 
 ## Workflow
 
-1. **Collect inputs.** Accept file paths or directories from the user. If a directory is given, recurse into it and process all supported files.
-2. **Deterministic clean (preferred: watermarks-remover).** If the watermarks-remover HTTP service is running, send the file to `POST /clean`.
-   ```bash
-   WATERMARKS_SERVICE_URL="${WATERMARKS_SERVICE_URL:-http://127.0.0.1:8765}"
-   
-   python3 - << 'PY'
-   import base64, json, os, requests, sys
-   service = os.environ.get("WATERMARKS_SERVICE_URL", "http://127.0.0.1:8765")
-   path = sys.argv[1]
-   out = sys.argv[2]
-   with open(path, "rb") as f:
-       b64 = base64.b64encode(f.read()).decode()
-   r = requests.post(f"{service}/clean", json={"file": b64, "name": os.path.basename(path)})
-   r.raise_for_status()
-   data = r.json()
-   with open(out, "wb") as f:
-       f.write(base64.b64decode(data["cleaned"]))
-   print(json.dumps(data.get("report", {}), indent=2))
-   PY
-   ```
-   Use the cleaned file if the call succeeds and the output is non-empty; otherwise fall back to the original.
-3. **Deterministic clean (fallback: anthropies).** If watermarks-remover is not available, try `anthropies clean` on the input file. This removes C2PA metadata from images, `Co-Authored-By` trailers from text, and other hard-bound vendor marks. It does **not** remove Anthropic's keyed text watermark.
-   ```bash
-   ANTHROPIES_CLI="./vendor/anthropies/dist/cli.js"
-   if [ -f "$ANTHROPIES_CLI" ]; then
-     node "$ANTHROPIES_CLI" clean "input.docx" -o ".tmp/vivid-clean/input.clean.docx" || true
-   elif command -v anthropies >/dev/null 2>&1; then
-     anthropies clean "input.docx" -o ".tmp/vivid-clean/input.clean.docx" || true
-   fi
-   ```
-   `anthropies clean` exits with code 1 when it finds a mark, but it still writes the cleaned file. Use the cleaned file if it exists; otherwise fall back to the original.
-4. **Inspect / detect (optional).** If the user only wants to know whether a file carries marks, use `POST /inspect` or `POST /detect` from watermarks-remover instead of `/clean`, and stop here. For images, this can also surface an optional SynthID pixel score if the heavy backend is configured.
-5. **Extract.** Convert the cleaned file (or the original, if no cleaner was available) to Markdown using `markitdown`.
-   ```bash
-   if [ -f ".tmp/vivid-clean/input.clean.docx" ]; then
-     markitdown ".tmp/vivid-clean/input.clean.docx" -o ".tmp/vivid-clean/input.md"
-   else
-     markitdown "input.docx" -o ".tmp/vivid-clean/input.md"
-   fi
-   ```
-6. **Humanise.** Rewrite the Markdown by applying the `/human` skill rules in full:
-   - Write like a person talking to one person.
-   - Australian English spelling (`colour`, `organise`, `behaviour`, `centred`, `modelling`).
-   - **No em dashes.** Use comma, colon, full stop, or parentheses.
-   - Avoid AI vocabulary: `delve`, `boasts`, `bolstered`, `crucial`, `emphasizing`, `enduring`, `garner`, `intricate`, `interplay`, `landscape`, `meticulous`, `pivotal`, `underscore`, `tapestry`, `testament`, `vibrant`, `align with`, `enhance`, `fostering`, `highlighting`, `showcasing`, `realm`, `multifaceted`, `commendable`, `paramount`, `commence`, `leverage`, `facilitate`, `utilise`, `foster`, `nestled`, `breathtaking`.
-   - Avoid negative parallelism, rule-of-three padding, superficial "-ing" tails, "Despite X, Y faces challenges", and compulsive summarising.
-   - Vary sentence length deliberately.
-   - Sentence case for headings.
-   - Preserve all names, dates, numbers, legal disclaimers, commitments, bullet lists, tables, and section headings.
-7. **Re-export.** Convert the rewritten Markdown back to the original format using `pandoc`.
-   ```bash
-   pandoc ".tmp/vivid-clean/input_vivid.md" -o "input_vivid.docx"
-   ```
-8. **Name the output.** Insert `_vivid` before the file extension:
-   - `Draft.docx` → `Draft_vivid.docx`
-   - `Slides.pptx` → `Slides_vivid.pptx`
-   - `Paper.pdf` → `Paper_vivid.docx` (PDFs are re-exported as DOCX by default)
-9. **Preserve originals.** Never overwrite the source file. Place the new file in the same directory as the source.
-10. **Clean up.** Delete the temporary Markdown files and the `.tmp/vivid-clean` working directory.
-11. **Report.** List the created files and give a short summary of what was changed.
-
-## Important constraints
-
-- **Do not change substantive meaning or legal intent.** This is a style and watermark-mitigation pass, not a content edit.
-- **Do not remove required institutional voice.** For formal applications and letters, keep the register appropriate while removing AI tells.
-- **If the user specifies a different suffix**, use it instead of `_vivid`.
-- **If pandoc or markitdown is missing**, install or alert the user rather than failing silently.
-
-## Setting up watermarks-remover
-
-The skill prefers a local watermarks-remover HTTP service. You only need to set this up once.
-
-### Quick start (Python, no Docker)
+### 1. Prepare the file
 
 ```bash
-git clone --depth 1 https://github.com/guillaumemeyer/watermarks-remover.git \
-  ./vendor/watermarks-remover
-cd ./vendor/watermarks-remover
-python3 service/scripts/server.py --host 127.0.0.1 --port 8765
+vivid-clean prepare "/absolute/path/to/Draft.docx"
 ```
 
-The core service needs only Python 3.10+ stdlib. Optional heavy backends (CtrlRegen pixel removal, SynthID scoring, MarkLLM verification) require separate setup and are not required for the document pipeline.
+The command starts the pinned local cleaner with a one-use token and prints a private session directory. It fails if neither watermarks-remover nor the installed anthropies fallback can produce an output. Don't bypass that failure by copying the original into the session.
 
-### Docker
+For images, the session may have no `draft.md`. Skip the writing pass and finish the session.
+
+### 2. Humanise `draft.md`
+
+Open the `draft.md` path printed by the CLI. Revise it like you're helping one person say what they already mean:
+
+- Preserve names, dates, numbers, quotations, citations, commitments, disclaimers, headings, tables, and list structure.
+- Keep the author's register and vocabulary. Don't flatten formal writing into chatty copy.
+- Prefer plain wording and natural contractions where they fit.
+- Vary sentence length and structure. Remove repeated model-like patterns rather than applying mechanical substitutions.
+- Treat punctuation as voice, not a detection checklist. Keep or replace dashes according to the author's style and readability instead of banning one mark everywhere.
+- Avoid stock AI phrasing, padded conclusions, forced groups of three, vague attribution, and repetitive summary paragraphs.
+- Don't claim the rewrite proves human authorship or defeats a detector.
+
+If the user's chosen assistant is hosted, tell them the text may be sent to that provider. For a local-only pass, have a local model edit `draft.md`, then continue with the same finish command. Don't describe a local model as a guarantee.
+
+### 3. Finish and verify
 
 ```bash
-git clone --depth 1 https://github.com/guillaumemeyer/watermarks-remover.git \
-  ./vendor/watermarks-remover
-cd ./vendor/watermarks-remover
-make docker-core-build
-docker run --rm -p 127.0.0.1:8765:8765 --read-only --tmpfs /tmp watermarks-remover
+vivid-clean finish "/private/session/path" --suffix "_reviewed"
 ```
 
-### Tell the skill where the service is
+Use `--output "/absolute/path/to/result.docx"` when the user gave an exact destination. Add `--report-json "/path/to/report.json"` only when they need machine-readable results.
 
-Set `WATERMARKS_SERVICE_URL` if the service is not on the default `http://127.0.0.1:8765`.
+The finish command:
 
-## anthropies setup and maintenance (fallback)
+1. Rebuilds the requested format.
+2. Removes regenerated DOCX properties and package references.
+3. Compares the source with the output.
+4. Saves `<output>.vivid-clean-report.md`.
+5. Deletes the private session after a valid finish run, whether verification passes or fails.
 
-This skill can use a working build of [anthropies](https://github.com/CharlesHoskinson/anthropies) at:
+Exit status `0` means the checks that ran found no medium or high residual marks. Status `1` means findings remain. Status `2` means a check couldn't finish. Don't present status `1` or `2` as done.
 
-`./vendor/anthropies/`
+### 4. Report to the user
 
-If watermarks-remover is unavailable, the skill falls back to `anthropies clean`.
+Give them the output and report paths. Use the report's exact scope:
 
-To update the vendored copy:
+- Say “no medium or high residual marks were detected by the checks that ran” when the result is verified.
+- Name any checks that weren't available.
+- Never say “there's no watermark” or “this will pass AI detection”.
+- Remind them to inspect formatting and meaning before sending the file.
+
+## Supported workflow
+
+| Format | Behaviour |
+| --- | --- |
+| DOCX | Full prepare, writing, rebuild, scrub and verification workflow |
+| PPTX | Best-effort writing and rebuild; require a close layout review |
+| PDF | Extract and write, then produce DOCX by default |
+| TXT, MD | Direct writing and verification |
+| PNG, JPEG, WebP | Deterministic cleaning and verification; no writing pass |
+
+Don't batch directories in this release. Process one file at a time so every file has its own result and report.
+
+## Persistent service override
+
+Most people don't need this. `prepare` starts and stops the pinned service itself. For repeated work, an advanced user may run it persistently:
 
 ```bash
-git clone --depth 1 https://github.com/CharlesHoskinson/anthropies.git /tmp/anthropies
-cd /tmp/anthropies
-pnpm install
-pnpm build
-rm -rf ./vendor/anthropies
-mv /tmp/anthropies ./vendor/anthropies
+.venv/bin/python vendor/watermarks-remover/service/scripts/server.py \
+  --host 127.0.0.1 --port 8765
 ```
 
-## Integration with /human
+Set `WATERMARKS_SERVICE_URL` to opt into that persistent service. If `WATERMARKS_SERVER_API_KEY` protects it, export the same value for the CLI. Never print it or put it in a report. The report records a self-reported version for external services because vivid-clean can't prove which checkout launched them.
 
-This skill is a document pipeline for `/human`. Whenever `/human` receives a document file as input, route it here instead of trying to rewrite inline text.
-
-## Limitations
-
-- **watermarks-remover Layer A** removes invisible Unicode and file metadata deterministically. It does **not** remove a keyed statistical text watermark.
-- **watermarks-remover Layer B** is a best-effort rewrite for statistical marks; it is not enabled by default in this pipeline because the `/human` pass already rewrites the text.
-- **anthropies clean** removes metadata and visible/vendor-bound marks. It does **not** remove Anthropic's keyed text watermark.
-- The `/human` rewrite pass degrades the statistical watermark by changing word choices, but because it is run by an AI assistant, it does not give a cryptographic guarantee.
-- For maximum assurance against keyed text detection, run the final draft through a local, non-watermarked model (Llama, Qwen, Mistral, DeepSeek with watermarking off), or edit the draft heavily yourself.
-- This skill does not prove a text is human-written, nor does it guarantee an official detector will fail.
-
-## Future extensions
-
-- Optional flags: `--suffix custom`, `--in-place`, `--output-dir <dir>`, `--check-only`.
-- PDF-to-PDF re-export using a reference doc or template.
-- Batch reports showing AI-tell density and detected marks before and after.
-- Optional local-model rewrite pass for users who want stronger keyed-watermark mitigation.
+The installer pins both engines. Don't run `git pull` inside `vendor/` or replace a pin during an ordinary cleaning task.
