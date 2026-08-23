@@ -59,7 +59,7 @@ The source installer creates `.venv` inside the repo. Both setup paths check out
 | Claude Code | `~/.claude/skills/vivid-clean/` |
 | Codex | `~/.codex/skills/vivid-clean/` |
 
-If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing skill copies are moved out of the assistant's skill folder and backed up under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That means an old copy can't appear as a duplicate skill. Run `./install.sh --skills-only` when the CLI is already set up and you only want to refresh the assistant instructions.
+If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing skill copies are moved out of the assistant's skill folder and backed up under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That means an old copy can't appear as a duplicate skill. Run `vivid-clean setup --skills-only` when the CLI is already set up and you only want to refresh the assistant instructions. From a source checkout, `./install.sh --skills-only` does the same thing.
 
 If you've already got Node 22 and pnpm, the installer builds anthropies as a fallback. If you haven't, no drama. The core installation still works.
 
