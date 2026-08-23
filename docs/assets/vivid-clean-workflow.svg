@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
   <title id="title">How vivid-clean handles a file</title>
-  <desc id="desc">A six-step workflow. Vivid-clean keeps the original file untouched, cleans known marks locally, creates a protected writing draft, lets the chosen assistant humanise the writing, puts the text back into the same document format, then saves a new copy with a check report. A hosted assistant may receive the extracted text.</desc>
+  <desc id="desc">A six-step workflow. Vivid-clean keeps the original file untouched, cleans known marks locally, creates a protected writing draft for editable files, lets the chosen assistant humanise the writing, puts the text back into the same document format, then saves a new copy with a check report. PDF and image files skip the writing pass. A hosted assistant may receive the extracted text.</desc>
   <defs>
     <style>
       .bg { fill: #121416; }
@@ -26,8 +26,8 @@
     <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
     <text class="step" x="24" y="35">01</text>
     <text class="label" x="24" y="78">Your original file</text>
-    <text class="detail" x="24" y="112">DOCX, PPTX, PDF, text</text>
-    <text class="small" x="24" y="145">Kept untouched</text>
+    <text class="detail" x="24" y="112">Documents, text and images</text>
+    <text class="small" x="24" y="145">Original kept untouched</text>
   </g>
 
   <g transform="translate(485 145) rotate(0.35 165 85)">
@@ -44,7 +44,7 @@
     <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
     <text class="step" x="24" y="35">03</text>
     <text class="label" x="24" y="78">Protected draft</text>
-    <text class="detail" x="24" y="112">Only editable text comes out</text>
+    <text class="detail" x="24" y="112">Editable files get a draft</text>
     <text class="detail" x="24" y="138">Values and markers stay locked</text>
   </g>
 
@@ -53,8 +53,8 @@
     <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
     <text class="step" x="24" y="35">04</text>
     <text class="label" x="24" y="78">Humanise the writing</text>
-    <text class="detail" x="24" y="112">Keep your meaning and voice</text>
-    <text class="small" x="24" y="145">PDF skips this writing pass</text>
+    <text class="detail" x="24" y="112">Preserve voice or rewrite deeper</text>
+    <text class="small" x="24" y="145">PDF and images skip this pass</text>
   </g>
 
   <g transform="translate(485 375) rotate(-0.25 165 85)">

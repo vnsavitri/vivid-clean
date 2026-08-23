@@ -32,13 +32,26 @@ The report says what was checked, what came out, what remains, and which checks 
 
 vivid-clean supports macOS and Linux. It needs Git and Python 3.11 or newer. It doesn't need Pandoc, MarkItDown or Docker.
 
-### New to the command line? Give this to your AI assistant
+### New to the command line? Copy this into your AI assistant
 
 Use an assistant that can run terminal commands on your computer, such as Codex, Claude Code or Cursor in agent mode. A browser chat can't install software for you.
 
-Copy and paste this prompt:
+Use the copy button in the top-right corner of this box, then paste the whole prompt into your assistant:
 
-> Install vivid-clean from the official PyPI package for me. The source repo is `https://github.com/vnsavitri/vivid-clean` and the package name is `vivid-clean`. First check that I'm on macOS or Linux and have Git and Python 3.11 or newer. If `pipx` is missing, install it using the normal user-level method for my system. Don't use `sudo` or change system Python without explaining why and asking me first. Then run `pipx install vivid-clean`, `vivid-clean setup --no-anthropies`, and `vivid-clean doctor`. If my shell can't find `vivid-clean`, run `pipx ensurepath` and tell me whether I need to restart the terminal. Stop and explain any error instead of trying random fixes. At the end, show me the installed version and which assistant skill folders were updated. Don't clean any documents yet.
+```text
+Install vivid-clean from the official PyPI package for me. The source repo is https://github.com/vnsavitri/vivid-clean and the package name is vivid-clean.
+
+First check that I'm on macOS or Linux and have Git and Python 3.11 or newer. If pipx is missing, install it using the normal user-level method for my system. Don't use sudo or change system Python without explaining why and asking me first.
+
+Then run:
+1. pipx install vivid-clean
+2. vivid-clean setup --no-anthropies
+3. vivid-clean doctor
+
+If my shell can't find vivid-clean, run pipx ensurepath and tell me whether I need to restart the terminal. Stop and explain any error instead of trying random fixes.
+
+At the end, show me the installed version and which assistant skill folders were updated. Don't clean any documents yet.
+```
 
 That gives you the core cleaner without the optional Node-based fallback. Once `doctor` passes, give your assistant a document path using the prompt under [Use it with an assistant](#use-it-with-an-assistant).
 
