@@ -1,0 +1,1 @@
+"""vivid-clean tests."""
