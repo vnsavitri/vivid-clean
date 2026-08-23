@@ -244,6 +244,6 @@ I wrote the longer argument here: [AI watermarking is the new scarlet letter](ht
 - Changes are recorded in [CHANGELOG.md](./CHANGELOG.md).
 - Security reports belong in the process described in [SECURITY.md](./SECURITY.md).
 - Contributions are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md).
-- Work that's still ahead is tracked in [ROADMAP.md](./ROADMAP.md).
+- Work that's still ahead is tracked in [ROADMAP.md](./ROADMAP.md) and on the public [vivid-clean backlog](https://github.com/users/vnsavitri/projects/1).
 
 Built by [Vivid Savitri](https://github.com/vnsavitri) under the [MIT Licence](./LICENSE).

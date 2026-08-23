@@ -11,6 +11,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Added plain-English answers for common AI watermark, document-format, image and privacy questions.
 - Expanded the package and repository search terms around text watermarks, document metadata and local-first cleaning without claiming pixel-level removal.
 - Added release gates for any future opt-in pixel-restoration work.
+- Linked the public project board from the README so planned, active and finished work is easy to follow.
 
 ## 0.3.0 - 2026-08-23
 
