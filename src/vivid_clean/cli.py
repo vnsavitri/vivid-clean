@@ -83,6 +83,20 @@ def build_parser() -> argparse.ArgumentParser:
     done.add_argument("--suffix", default="_vivid")
     done.add_argument("--output", type=Path)
     done.add_argument("--report-json", type=Path)
+    done.add_argument(
+        "--writing-backend",
+        help="name the human or model used for the writing pass",
+    )
+    done.add_argument(
+        "--writing-backend-kind",
+        choices=("human", "local-unwatermarked", "hosted", "unknown"),
+        default="unknown",
+    )
+    done.add_argument(
+        "--rewrite-purpose",
+        choices=("voice-preserving", "statistical-risk-reduction"),
+        default="voice-preserving",
+    )
     check = sub.add_parser("verify", help="compare an original with an output")
     check.add_argument("original", type=Path)
     check.add_argument("output", type=Path)
@@ -121,7 +135,13 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "finish":
             output, report, status = finish(
-                args.session, args.suffix, args.output, args.report_json
+                args.session,
+                args.suffix,
+                args.output,
+                args.report_json,
+                args.writing_backend,
+                args.writing_backend_kind,
+                args.rewrite_purpose,
             )
             print(f"Output: {output}")
             print(f"Report: {report}")

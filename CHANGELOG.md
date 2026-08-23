@@ -4,9 +4,22 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## Unreleased
 
+### Added
+
+- Writing-pass provenance in Markdown and JSON reports, including the declared backend, its kind, the rewrite purpose, and a best-effort five-word-sequence overlap measure.
+- A separate statistical-risk-reduction mode for people who knowingly choose a more substantial rewrite.
+
 ### Changed
 
 - Added a plain-English workflow diagram and its editable Excalidraw source to the README.
+- Statistical-risk reduction now requires a human or declared local unwatermarked backend. Long passages must clear the rewrite-depth target, while short passages are reported as insufficient to measure.
+- The assistant skill now warns that an origin or known watermarked model can add a fresh mark during rewriting.
+
+### Fixed
+
+- Prevented hosted or unknown writing backends from being presented as statistical-risk mitigation.
+- Backend labels can no longer inject control characters or Markdown into a verification report.
+- Correctable pre-output failures now keep the restricted session, so the draft can be fixed without preparing the source again.
 
 ## 0.2.0 - 2026-08-23
 

@@ -210,6 +210,7 @@ class WorkflowSafetyTests(unittest.TestCase):
             report = root / "Draft_reviewed.docx.vivid-clean-report.md"
             self.assertTrue(report.is_file())
             self.assertIn("incomplete", report.read_text(encoding="utf-8"))
+            self.assertTrue(session.is_dir())
 
     def test_json_report_keeps_engine_evidence_and_scoped_channels(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
@@ -222,7 +223,13 @@ class WorkflowSafetyTests(unittest.TestCase):
             ):
                 session = prepare(source, root)
                 _output, _report, status = finish(
-                    session, "_reviewed", None, json_report
+                    session,
+                    "_reviewed",
+                    None,
+                    json_report,
+                    "manual edit",
+                    "human",
+                    "voice-preserving",
                 )
 
             self.assertEqual(status, "checks_passed")
@@ -238,6 +245,39 @@ class WorkflowSafetyTests(unittest.TestCase):
             self.assertEqual(record["channels"]["protected_values"]["status"], "passed")
             self.assertEqual(record["channels"]["statistical"]["status"], "not_checked")
             self.assertEqual(record["channels"]["proprietary"]["status"], "not_checked")
+            self.assertEqual(record["writing_pass"]["backend"], "manual edit")
+            self.assertEqual(record["writing_pass"]["backend_kind"], "human")
+            self.assertEqual(
+                record["writing_pass"]["rewrite_evidence"]["status"], "insufficient"
+            )
+
+    def test_finish_refuses_hosted_statistical_rewrite_claim(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            source = root / "Draft.docx"
+            make_styled_docx(source)
+            with patch(
+                "vivid_clean.workflow.managed_watermarks_client", copying_client
+            ):
+                session = prepare(source, root)
+                with self.assertRaisesRegex(
+                    WorkflowError, "origin or unknown hosted model"
+                ):
+                    finish(
+                        session,
+                        "_reviewed",
+                        None,
+                        None,
+                        "Claude",
+                        "hosted",
+                        "statistical-risk-reduction",
+                    )
+
+            report = root / "Draft_reviewed.docx.vivid-clean-report.md"
+            report_text = report.read_text(encoding="utf-8")
+            self.assertIn("Backend: `Claude`", report_text)
+            self.assertIn("Result: **incomplete**", report_text)
+            self.assertTrue(session.is_dir())
 
     def test_cleanup_removes_only_valid_vivid_clean_sessions(self) -> None:
         with tempfile.TemporaryDirectory() as temp:

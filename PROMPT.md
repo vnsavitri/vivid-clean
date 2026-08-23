@@ -11,7 +11,7 @@ Please install vivid-clean from https://github.com/vnsavitri/vivid-clean.
 4. Run vivid-clean doctor and explain anything that's unavailable. The cleaner should start on loopback with a one-use token when a file is prepared, so don't leave a background service running.
 5. Confirm that the vivid-clean skill was copied into the skill directory used by this assistant, including a custom CODEX_HOME when present.
 
-Metadata cleaning and verification run locally. Tell me clearly if the writing pass will send text through a hosted assistant, and offer a local-model route if I want the text to stay on my computer.
+Metadata cleaning and verification run locally. Tell me clearly if the writing pass will send text through a hosted assistant or may add that provider's own marks. Offer a human or local unwatermarked route if I ask for statistical-risk reduction.
 
 Once setup is working, ask which file I want to prepare first.
 ```

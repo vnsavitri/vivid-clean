@@ -17,8 +17,14 @@ from pathlib import Path
 from typing import Any
 
 from .docx import scrub_docx
-from .package_edit import PackageEditError, apply_package_draft, prepare_package_draft
+from .package_edit import (
+    PackageEditError,
+    apply_package_draft,
+    prepare_package_draft,
+    read_package_revisions,
+)
 from .report import build_record, write_report
+from .rewrite import rewrite_evidence, validate_backend_label, validate_writing_pass
 from .service import ServiceError, WatermarksClient
 from .verify import VerificationError, diff, failing_findings
 
@@ -242,8 +248,33 @@ def cleanup_sessions(older_than_hours: float = 24, dry_run: bool = False) -> lis
     return removed
 
 
+def _writing_texts(
+    cleaned: Path, draft: Path, editor: dict[str, Any]
+) -> tuple[str, str]:
+    mode = editor.get("mode")
+    if mode == "plain_text":
+        return (
+            cleaned.read_text(encoding="utf-8"),
+            draft.read_text(encoding="utf-8"),
+        )
+    if mode == "ooxml":
+        revisions = read_package_revisions(draft, editor)
+        originals = [str(block["original"]) for block in editor["blocks"]]
+        revised = [revisions[str(block["id"])] for block in editor["blocks"]]
+        return "\n".join(originals), "\n".join(revised)
+    raise WorkflowError(
+        "this session predates format-preserving editing; prepare the source again"
+    )
+
+
 def finish(
-    session: Path, suffix: str, output: Path | None, json_report: Path | None
+    session: Path,
+    suffix: str,
+    output: Path | None,
+    json_report: Path | None,
+    writing_backend: str | None = None,
+    writing_backend_kind: str = "unknown",
+    rewrite_purpose: str = "voice-preserving",
 ) -> tuple[Path, Path, str]:
     session = session.expanduser().resolve()
     try:
@@ -259,12 +290,14 @@ def finish(
         raise WorkflowError("output must be different from the source file")
     report_path = destination.with_name(f"{destination.name}.vivid-clean-report.md")
     verification: dict[str, Any] | None = None
+    writing_pass: dict[str, Any] = {"status": "not_recorded"}
     unavailable = [
         "Keyed statistical watermark detectors unless configured in watermarks-remover.",
         "Pixel-level image watermarks unless an optional pixel backend is configured.",
         "Any proprietary detector that wasn't available to this run.",
     ]
     status = "incomplete"
+    consume_session = False
     try:
         destination.parent.mkdir(parents=True, exist_ok=True)
         if manifest["editable"]:
@@ -272,6 +305,27 @@ def finish(
             if not draft.is_file() or not draft.read_text(encoding="utf-8").strip():
                 raise WorkflowError("draft.md is missing or empty")
             editor = manifest.get("editor", {})
+            try:
+                before, after = _writing_texts(cleaned, draft, editor)
+            except PackageEditError as exc:
+                raise WorkflowError(str(exc)) from exc
+            evidence = rewrite_evidence(before, after)
+            validate_backend_label(writing_backend)
+            writing_pass = {
+                "status": "recorded" if writing_backend else "not_recorded",
+                "backend": writing_backend or "not recorded",
+                "backend_kind": writing_backend_kind,
+                "backend_claim_verified": False,
+                "purpose": rewrite_purpose,
+                "rewrite_evidence": evidence,
+            }
+            writing_pass = validate_writing_pass(
+                editable=True,
+                backend=writing_backend,
+                backend_kind=writing_backend_kind,
+                purpose=rewrite_purpose,
+                evidence=evidence,
+            )
             if editor.get("mode") == "plain_text":
                 shutil.copyfile(draft, destination)
             elif editor.get("mode") == "ooxml":
@@ -284,13 +338,27 @@ def finish(
                     "this session predates format-preserving editing; prepare the source again"
                 )
         else:
+            writing_pass = validate_writing_pass(
+                editable=False,
+                backend=writing_backend,
+                backend_kind=writing_backend_kind,
+                purpose=rewrite_purpose,
+                evidence=None,
+            )
             shutil.copyfile(cleaned, destination)
         if destination.suffix.lower() == ".docx":
             scrub_docx(destination)
+        consume_session = True
         verification = diff(source, destination)
         status = "findings" if failing_findings(verification) else "checks_passed"
         record = build_record(
-            source, destination, manifest["engine"], verification, unavailable, status
+            source,
+            destination,
+            manifest["engine"],
+            verification,
+            unavailable,
+            status,
+            writing_pass,
         )
         write_report(record, report_path, json_report)
         return destination, report_path, status
@@ -302,10 +370,12 @@ def finish(
             verification,
             unavailable + [f"Verification stopped: {exc}"],
             "incomplete",
+            writing_pass,
         )
         write_report(record, report_path, None)
         raise WorkflowError(
             f"{exc}. An incomplete report was saved to {report_path}"
         ) from exc
     finally:
-        shutil.rmtree(session, ignore_errors=True)
+        if consume_session:
+            shutil.rmtree(session, ignore_errors=True)

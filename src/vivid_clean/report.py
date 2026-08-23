@@ -62,6 +62,7 @@ def build_record(
     verification: dict[str, Any] | None,
     unavailable: list[str],
     status: str,
+    writing_pass: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     engine_record = {
         key: engine[key]
@@ -75,6 +76,7 @@ def build_record(
         "output": output.name,
         "status": status,
         "engine": engine_record,
+        "writing_pass": writing_pass or {"status": "not_recorded"},
         "verification": verification
         or {"removed": [], "residual": [], "introduced": []},
         "channels": _channels(output, verification, status),
@@ -100,6 +102,28 @@ def write_report(
         "findings": "The output still has medium or high findings. Review it before use.",
         "incomplete": "The checks couldn't finish, so this output has an incomplete result.",
     }[record["status"]]
+    writing = record["writing_pass"]
+    evidence = writing.get("rewrite_evidence")
+    ratio = evidence.get("surviving_ratio") if evidence else None
+    ratio_text = "not available" if ratio is None else f"{ratio:.1%}"
+    writing_lines = [f"- Status: `{writing.get('status', 'not_recorded')}`"]
+    if writing.get("status") != "not_applicable":
+        writing_lines.extend(
+            [
+                f"- Backend: `{writing.get('backend', 'not recorded')}`",
+                f"- Backend kind: `{writing.get('backend_kind', 'unknown')}`",
+                f"- Purpose: `{writing.get('purpose', 'not recorded')}`",
+                "- Backend claim independently verified: `no`",
+            ]
+        )
+    if evidence:
+        writing_lines.extend(
+            [
+                f"- Rewrite evidence: `{evidence['status']}`",
+                f"- Original five-word sequences surviving: `{ratio_text}`",
+                "- This overlap measure is a rewrite-depth proxy, not a watermark detector.",
+            ]
+        )
     lines = [
         "# vivid-clean verification record",
         "",
@@ -125,6 +149,10 @@ def write_report(
         f"- Engine reference: `{record['engine'].get('ref', 'not recorded')}`",
         f"- Capabilities recorded: `{'yes' if record['engine'].get('capabilities') else 'no'}`",
         f"- Engine report recorded: `{'yes' if record['engine'].get('report') else 'no'}`",
+        "",
+        "## Writing pass",
+        "",
+        *writing_lines,
         "",
         "## Removed",
         "",
