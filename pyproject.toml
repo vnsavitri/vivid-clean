@@ -1,16 +1,24 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "vivid-clean"
-version = "0.2.0"
+version = "0.3.0"
 description = "A local-first document cleaning and verification workflow"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "Vivid Savitri"}]
+keywords = ["accessibility", "ai-watermarking", "document-cleaning", "privacy"]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/vnsavitri/vivid-clean"
+Documentation = "https://github.com/vnsavitri/vivid-clean#readme"
+Issues = "https://github.com/vnsavitri/vivid-clean/issues"
+Changelog = "https://github.com/vnsavitri/vivid-clean/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = ["ruff>=0.12,<1"]
@@ -20,6 +28,9 @@ vivid-clean = "vivid_clean.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.data-files]
+"share/vivid-clean" = ["SKILL.md", "PROMPT.md"]
 
 [tool.ruff]
 target-version = "py311"

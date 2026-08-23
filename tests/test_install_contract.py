@@ -7,8 +7,11 @@ import tempfile
 import tomllib
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from vivid_clean import __version__
+from vivid_clean.bootstrap import setup_runtime
+from vivid_clean.runtime import data_root, runtime_root
 
 
 class InstallerContractTests(unittest.TestCase):
@@ -27,6 +30,19 @@ class InstallerContractTests(unittest.TestCase):
             'ANTHROPIES_REF="6d1dba6870b9a01a1c088e18d8eed44366bbbe36"', self.script
         )
         self.assertNotIn("git pull", self.script)
+        bootstrap = (
+            Path(__file__).parents[1] / "src/vivid_clean/bootstrap.py"
+        ).read_text(encoding="utf-8")
+        workflow = (
+            Path(__file__).parents[1] / "src/vivid_clean/workflow.py"
+        ).read_text(encoding="utf-8")
+        for ref in (
+            "104aacd212d7a262c32bd7f1f4aa380c26a5d4b5",
+            "6d1dba6870b9a01a1c088e18d8eed44366bbbe36",
+        ):
+            self.assertIn(ref, workflow)
+        self.assertIn("WATERMARKS_REMOVER_REF", bootstrap)
+        self.assertIn("ANTHROPIES_REF", bootstrap)
 
     def test_supported_skill_locations_are_installed(self) -> None:
         for location in (
@@ -182,3 +198,48 @@ class InstallerContractTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout.strip(), f"vivid-clean {expected}")
+
+    def test_packaged_runtime_uses_xdg_data_home(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            xdg_data = Path(temp) / "data"
+            with patch.dict(
+                os.environ,
+                {"XDG_DATA_HOME": str(xdg_data)},
+                clear=False,
+            ):
+                os.environ.pop("VIVID_CLEAN_DATA_HOME", None)
+                self.assertEqual(data_root(), (xdg_data / "vivid-clean").resolve())
+
+    def test_explicit_runtime_home_takes_precedence(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            expected = Path(temp) / "runtime"
+            with patch.dict(
+                os.environ,
+                {"VIVID_CLEAN_DATA_HOME": str(expected)},
+                clear=False,
+            ):
+                self.assertEqual(runtime_root(), expected.resolve())
+
+    def test_packaged_setup_can_install_only_the_skills(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            user_home = root / "user"
+            codex_home = root / "codex"
+            environment = {
+                "VIVID_CLEAN_USER_HOME": str(user_home),
+                "VIVID_CLEAN_DATA_HOME": str(root / "runtime"),
+                "VIVID_CLEAN_STATE_HOME": str(root / "state"),
+                "CODEX_HOME": str(codex_home),
+            }
+            with patch.dict(os.environ, environment, clear=False):
+                result = setup_runtime(skills_only=True)
+
+            self.assertEqual(result["watermarks_remover"], "skipped")
+            for target in (
+                user_home / ".agents" / "skills" / "vivid-clean",
+                user_home / ".cursor" / "skills" / "vivid-clean",
+                user_home / ".claude" / "skills" / "vivid-clean",
+                codex_home / "skills" / "vivid-clean",
+            ):
+                self.assertTrue((target / "SKILL.md").is_file())
+                self.assertTrue((target / "PROMPT.md").is_file())

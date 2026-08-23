@@ -3,7 +3,10 @@
 ![vivid-clean: local-first document cleaning](./gh-cover2.png)
 
 [![CI](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml/badge.svg)](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/vnsavitri/vivid-clean/actions/workflows/codeql.yml/badge.svg)](https://github.com/vnsavitri/vivid-clean/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/vnsavitri/vivid-clean/badge)](https://scorecard.dev/viewer/?uri=github.com/vnsavitri/vivid-clean)
 [![Latest release](https://img.shields.io/github/v/release/vnsavitri/vivid-clean?style=flat-square)](https://github.com/vnsavitri/vivid-clean/releases/latest)
+[![PyPI](https://img.shields.io/pypi/v/vivid-clean?style=flat-square)](https://pypi.org/project/vivid-clean/)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-00B67A?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](./pyproject.toml)
 [![Local metadata cleaning](https://img.shields.io/badge/metadata%20cleaning-local-5B6CFF?style=flat-square)](#privacy-in-plain-english)
@@ -29,6 +32,17 @@ The report says what was checked, what came out, what remains, and which checks 
 
 vivid-clean supports macOS and Linux. You'll need Git and Python 3.11 or newer. It doesn't need Pandoc, MarkItDown or Docker.
 
+If you use `pipx`, install the command and its pinned cleaner with:
+
+```bash
+pipx install vivid-clean
+vivid-clean setup
+```
+
+The first command keeps vivid-clean in its own Python environment. The second checks out the reviewed cleaning engine and installs the assistant skill. It also builds the optional anthropies fallback when Node 22 and pnpm are available. Add `--no-anthropies` when you only want the core cleaner.
+
+You can still install from a source checkout:
+
 ```bash
 git clone https://github.com/vnsavitri/vivid-clean.git
 cd vivid-clean
@@ -36,7 +50,7 @@ chmod +x install.sh
 ./install.sh
 ```
 
-The installer creates `.venv` inside the repo, checks out audited dependency commits, and installs the skill for compatible agents at:
+The source installer creates `.venv` inside the repo. Both setup paths check out audited dependency commits and install the skill for compatible agents at:
 
 | Assistant | Skill location |
 | --- | --- |
@@ -147,7 +161,7 @@ The detailed assumptions and failure cases are in the [threat model](./docs/thre
 
 Meaningful updates get a dated [changelog](./CHANGELOG.md), a matching Git tag, and a [GitHub Release](https://github.com/vnsavitri/vivid-clean/releases). Small copy fixes may sit under `Unreleased` until the next version. If a change affects how your file is handled, installed, or checked, it belongs in the release notes.
 
-The latest release is [v0.2.0](https://github.com/vnsavitri/vivid-clean/releases/tag/v0.2.0). It adds format-preserving Word and PowerPoint editing, clearer check reports, safer session cleanup, and skill updates that don't leave duplicate copies behind.
+The latest release is [v0.3.0](https://github.com/vnsavitri/vivid-clean/releases/tag/v0.3.0). It adds provider-aware statistical watermark guardrails, a tested PyPI package, security scanning, and cleaner setup for packaged installs.
 
 ## Why this exists
 
