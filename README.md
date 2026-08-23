@@ -55,6 +55,14 @@ Add `~/.local/bin` to your `PATH` if it isn't there already, then check the setu
 vivid-clean doctor
 ```
 
+## How it works
+
+Your original stays put. vivid-clean makes a restricted working copy, handles the checks it can run locally, and saves the result as a new file with its own report.
+
+![How vivid-clean keeps the original file untouched, cleans known marks locally, protects values during the writing pass, returns text to the same document format, and saves a checked copy with a report](./docs/assets/vivid-clean-workflow.svg)
+
+The writing pass follows the assistant you choose. A local model keeps that text on your computer. A hosted assistant may receive the extracted text under that provider's privacy and retention terms.
+
 ## Use it with an assistant
 
 Give your assistant the file path and say what you want:

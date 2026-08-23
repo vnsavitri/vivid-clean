@@ -4,6 +4,10 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## Unreleased
 
+### Changed
+
+- Added a plain-English workflow diagram and its editable Excalidraw source to the README.
+
 ## 0.2.0 - 2026-08-23
 
 ### Added

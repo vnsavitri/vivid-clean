@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="720" viewBox="0 0 1400 720" role="img" aria-labelledby="title desc">
+  <title id="title">How vivid-clean handles a file</title>
+  <desc id="desc">A six-step workflow. Vivid-clean keeps the original file untouched, cleans known marks locally, creates a protected writing draft, lets the chosen assistant humanise the writing, puts the text back into the same document format, then saves a new copy with a check report. A hosted assistant may receive the extracted text.</desc>
+  <defs>
+    <style>
+      .bg { fill: #121416; }
+      .card { fill: #1c1f22; stroke: #f5b65a; stroke-width: 2.5; }
+      .echo { fill: none; stroke: #f9df9b; stroke-width: 1; opacity: .28; }
+      .step { fill: #f5b65a; font-family: SFMono-Regular, Menlo, monospace; font-size: 16px; font-weight: 700; letter-spacing: .12em; }
+      .label { fill: #fff8e7; font-family: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif; font-size: 27px; font-weight: 600; }
+      .detail { fill: #c9c3b5; font-family: "Trebuchet MS", Arial, sans-serif; font-size: 18px; }
+      .small { fill: #f9df9b; font-family: "Trebuchet MS", Arial, sans-serif; font-size: 17px; }
+      .title { fill: #fff8e7; font-family: "Arial Rounded MT Bold", "Trebuchet MS", Arial, sans-serif; font-size: 34px; font-weight: 600; letter-spacing: .02em; }
+      .eyebrow { fill: #f5b65a; font-family: SFMono-Regular, Menlo, monospace; font-size: 15px; font-weight: 700; letter-spacing: .2em; }
+      .arrow { fill: none; stroke: #f5b65a; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+      .note { fill: #17191b; stroke: #6d6250; stroke-width: 1.5; stroke-dasharray: 7 7; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1400" height="720" rx="24"/>
+  <text class="eyebrow" x="70" y="63">WHAT HAPPENS TO YOUR FILE</text>
+  <text class="title" x="70" y="108">From the original to a checked copy, without the format round trip</text>
+
+  <g transform="translate(60 145) rotate(-0.4 165 85)">
+    <rect class="card" width="330" height="170" rx="18"/>
+    <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
+    <text class="step" x="24" y="35">01</text>
+    <text class="label" x="24" y="78">Your original file</text>
+    <text class="detail" x="24" y="112">DOCX, PPTX, PDF, text</text>
+    <text class="small" x="24" y="145">Kept untouched</text>
+  </g>
+
+  <g transform="translate(485 145) rotate(0.35 165 85)">
+    <rect class="card" width="330" height="170" rx="18"/>
+    <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
+    <text class="step" x="24" y="35">02</text>
+    <text class="label" x="24" y="78">Clean locally</text>
+    <text class="detail" x="24" y="112">Remove known marks and</text>
+    <text class="detail" x="24" y="138">record what the engine found</text>
+  </g>
+
+  <g transform="translate(910 145) rotate(-0.3 165 85)">
+    <rect class="card" width="330" height="170" rx="18"/>
+    <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
+    <text class="step" x="24" y="35">03</text>
+    <text class="label" x="24" y="78">Protected draft</text>
+    <text class="detail" x="24" y="112">Only editable text comes out</text>
+    <text class="detail" x="24" y="138">Values and markers stay locked</text>
+  </g>
+
+  <g transform="translate(910 375) rotate(0.35 165 85)">
+    <rect class="card" width="330" height="170" rx="18"/>
+    <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
+    <text class="step" x="24" y="35">04</text>
+    <text class="label" x="24" y="78">Humanise the writing</text>
+    <text class="detail" x="24" y="112">Keep your meaning and voice</text>
+    <text class="small" x="24" y="145">PDF skips this writing pass</text>
+  </g>
+
+  <g transform="translate(485 375) rotate(-0.25 165 85)">
+    <rect class="card" width="330" height="170" rx="18"/>
+    <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
+    <text class="step" x="24" y="35">05</text>
+    <text class="label" x="24" y="78">Put the text back</text>
+    <text class="detail" x="24" y="112">Word and PowerPoint keep</text>
+    <text class="detail" x="24" y="138">their existing package structure</text>
+  </g>
+
+  <g transform="translate(60 375) rotate(0.3 165 85)">
+    <rect class="card" width="330" height="170" rx="18"/>
+    <rect class="echo" x="7" y="7" width="316" height="156" rx="15"/>
+    <text class="step" x="24" y="35">06</text>
+    <text class="label" x="24" y="78">Check and save</text>
+    <text class="detail" x="24" y="112">New reviewed copy</text>
+    <text class="small" x="24" y="145">Plus a scoped check report</text>
+  </g>
+
+  <path class="arrow" d="M390 230 C425 230, 445 230, 470 230"/>
+  <path class="arrow" d="M458 220 L470 230 L458 240"/>
+  <path class="arrow" d="M815 230 C850 230, 870 230, 895 230"/>
+  <path class="arrow" d="M883 220 L895 230 L883 240"/>
+  <path class="arrow" d="M1075 315 C1075 335, 1075 345, 1075 360"/>
+  <path class="arrow" d="M1065 348 L1075 360 L1085 348"/>
+  <path class="arrow" d="M910 460 C875 460, 850 460, 830 460"/>
+  <path class="arrow" d="M842 450 L830 460 L842 470"/>
+  <path class="arrow" d="M485 460 C450 460, 425 460, 405 460"/>
+  <path class="arrow" d="M417 450 L405 460 L417 470"/>
+
+  <g transform="translate(300 600)">
+    <rect class="note" width="800" height="76" rx="16"/>
+    <text class="small" x="400" y="31" text-anchor="middle">Local model: the writing pass stays on your computer.</text>
+    <text class="detail" x="400" y="57" text-anchor="middle">Hosted assistant: the extracted text may be sent to that provider.</text>
+  </g>
+</svg>
