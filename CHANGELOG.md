@@ -4,6 +4,8 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 ## Unreleased
 
+## 0.2.0 - 2026-08-23
+
 ### Added
 
 - A Python CLI for preparing, finishing, checking, and diagnosing the workflow.
@@ -23,6 +25,10 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - The overall success label is now `checks_passed` instead of the broader `verified`.
 - Skill installation honours custom `CODEX_HOME` locations and backs up existing copies before replacement.
 - Pandoc and MarkItDown are no longer core dependencies.
+
+### Fixed
+
+- Skill upgrades now keep backups outside assistant skill folders, so an older copy can't be discovered as a second `vivid-clean` skill.
 
 ## 0.0.1 - 2026-08-22
 

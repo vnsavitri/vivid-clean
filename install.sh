@@ -8,6 +8,8 @@ VENDOR_DIR="${REPO_DIR}/vendor"
 VENV_DIR="${REPO_DIR}/.venv"
 INSTALL_HOME="${VIVID_CLEAN_USER_HOME:-${HOME}}"
 BIN_DIR="${INSTALL_HOME}/.local/bin"
+STATE_HOME="${VIVID_CLEAN_STATE_HOME:-${XDG_STATE_HOME:-${INSTALL_HOME}/.local/state}}"
+SKILL_BACKUP_DIR="${STATE_HOME}/vivid-clean/skill-backups"
 CODEX_SKILLS_HOME="${CODEX_HOME:-${INSTALL_HOME}/.codex}/skills"
 WATERMARKS_REMOVER_URL="https://github.com/guillaumemeyer/watermarks-remover.git"
 WATERMARKS_REMOVER_REF="104aacd212d7a262c32bd7f1f4aa380c26a5d4b5"
@@ -107,15 +109,27 @@ install_anthropies_if_available() {
 
 install_skill_copy() {
   local base="$1"
+  local label="$2"
   local target="${base}/vivid-clean"
   local stage
   local backup=""
+  local legacy
+  local legacy_archive
   mkdir -p "${base}"
+  mkdir -p "${SKILL_BACKUP_DIR}/${label}"
+
+  shopt -s nullglob
+  for legacy in "${base}"/vivid-clean.backup.*; do
+    legacy_archive="$(mktemp -d "${SKILL_BACKUP_DIR}/${label}/legacy.$(date -u +%Y%m%dT%H%M%SZ).XXXXXX")"
+    mv "${legacy}" "${legacy_archive}/$(basename "${legacy}")"
+  done
+  shopt -u nullglob
+
   stage="$(mktemp -d "${base}/.vivid-clean.stage.XXXXXX")"
   cp "${REPO_DIR}/SKILL.md" "${stage}/SKILL.md"
   cp "${REPO_DIR}/PROMPT.md" "${stage}/PROMPT.md"
   if [[ -e "${target}" || -L "${target}" ]]; then
-    backup="${base}/vivid-clean.backup.$(date -u +%Y%m%dT%H%M%SZ).$$"
+    backup="$(mktemp -d "${SKILL_BACKUP_DIR}/${label}/current.$(date -u +%Y%m%dT%H%M%SZ).XXXXXX")/vivid-clean"
     mv "${target}" "${backup}"
   fi
   if ! mv "${stage}" "${target}"; then
@@ -128,10 +142,10 @@ install_skill_copy() {
 }
 
 install_skills() {
-  install_skill_copy "${INSTALL_HOME}/.agents/skills"
-  install_skill_copy "${INSTALL_HOME}/.cursor/skills"
-  install_skill_copy "${INSTALL_HOME}/.claude/skills"
-  install_skill_copy "${CODEX_SKILLS_HOME}"
+  install_skill_copy "${INSTALL_HOME}/.agents/skills" "agents"
+  install_skill_copy "${INSTALL_HOME}/.cursor/skills" "cursor"
+  install_skill_copy "${INSTALL_HOME}/.claude/skills" "claude"
+  install_skill_copy "${CODEX_SKILLS_HOME}" "codex"
   info "Installed the skill for compatible agents, Cursor, Claude and Codex."
 }
 

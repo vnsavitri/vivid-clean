@@ -3,6 +3,7 @@
 ![vivid-clean: local-first document cleaning](./gh-cover2.png)
 
 [![CI](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml/badge.svg)](https://github.com/vnsavitri/vivid-clean/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/vnsavitri/vivid-clean?style=flat-square)](https://github.com/vnsavitri/vivid-clean/releases/latest)
 [![Licence: MIT](https://img.shields.io/badge/licence-MIT-00B67A?style=flat-square)](./LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](./pyproject.toml)
 [![Local metadata cleaning](https://img.shields.io/badge/metadata%20cleaning-local-5B6CFF?style=flat-square)](#privacy-in-plain-english)
@@ -44,7 +45,7 @@ The installer creates `.venv` inside the repo, checks out audited dependency com
 | Claude Code | `~/.claude/skills/vivid-clean/` |
 | Codex | `~/.codex/skills/vivid-clean/` |
 
-If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing skill copies are backed up before replacement. Run `./install.sh --skills-only` when the CLI is already set up and you only want to refresh the assistant instructions.
+If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing skill copies are moved out of the assistant's skill folder and backed up under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That means an old copy can't appear as a duplicate skill. Run `./install.sh --skills-only` when the CLI is already set up and you only want to refresh the assistant instructions.
 
 If you've already got Node 22 and pnpm, the installer builds anthropies as a fallback. If you haven't, no drama. The core installation still works.
 
@@ -123,6 +124,12 @@ Want the whole workflow to stay local? Use a local model such as Ollama to edit 
 
 The detailed assumptions and failure cases are in the [threat model](./docs/threat-model.md). Dependency pins and licences are recorded in [DEPENDENCIES.md](./DEPENDENCIES.md).
 
+## Releases and updates
+
+Meaningful updates get a dated [changelog](./CHANGELOG.md), a matching Git tag, and a [GitHub Release](https://github.com/vnsavitri/vivid-clean/releases). Small copy fixes may sit under `Unreleased` until the next version. If a change affects how your file is handled, installed, or checked, it belongs in the release notes.
+
+The latest release is [v0.2.0](https://github.com/vnsavitri/vivid-clean/releases/tag/v0.2.0). It adds format-preserving Word and PowerPoint editing, clearer check reports, safer session cleanup, and skill updates that don't leave duplicate copies behind.
+
 ## Why this exists
 
 I built vivid-clean because AI can make writing possible, or simply less exhausting, for people with dyslexia, ADHD, autism, learning disabilities, injury, fatigue, or a packed day. Treating every assisted sentence as deception erases why people use these tools in the first place.
@@ -134,6 +141,6 @@ I wrote the longer argument here: [AI watermarking is the new scarlet letter](ht
 - Changes are recorded in [CHANGELOG.md](./CHANGELOG.md).
 - Security reports belong in the process described in [SECURITY.md](./SECURITY.md).
 - Contributions are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md).
-- Formatting-preserving document editing is tracked in [ROADMAP.md](./ROADMAP.md).
+- Work that's still ahead is tracked in [ROADMAP.md](./ROADMAP.md).
 
 Built by [Vivid Savitri](https://github.com/vnsavitri) under the [MIT Licence](./LICENSE).
