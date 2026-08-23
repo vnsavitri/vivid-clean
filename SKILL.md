@@ -85,6 +85,18 @@ Don't batch directories in this release. Work through one file at a time so each
 
 Run `vivid-clean cleanup --dry-run` to inspect expired sessions, or `vivid-clean cleanup` to remove validated sessions older than 24 hours.
 
+## Keep the skill current
+
+After updating the vivid-clean repo, refresh the assistant instructions with:
+
+```bash
+./install.sh --skills-only
+```
+
+The installer updates Agent Skills-compatible tools, Cursor, Claude Code and Codex, including a custom `CODEX_HOME`. It keeps replaced copies under `$XDG_STATE_HOME/vivid-clean/skill-backups/`, or `~/.local/state/vivid-clean/skill-backups/` when `XDG_STATE_HOME` isn't set. That sits outside the folders assistants scan for skills. The installer also moves older `vivid-clean.backup.*` folders out of those scan paths, so only the current skill is discovered.
+
+Don't copy `SKILL.md` by hand unless the installer can't run. A partial update can leave the instructions out of step with the CLI.
+
 ## Persistent service override
 
 Most people don't need this. `prepare` starts and stops the pinned service itself. For repeated work, an advanced user may run it persistently:

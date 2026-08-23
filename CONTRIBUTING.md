@@ -23,4 +23,4 @@ Run `shellcheck install.sh` when you change the installer.
 - Keep privacy and result claims consistent across the README, setup prompt, skill, report wording, and threat model.
 - Update `DEPENDENCIES.md` when changing an upstream pin, after reviewing its source, licence, and interface.
 
-Formatting-preserving DOCX or PPTX editing needs a design spike before anybody starts building it. See [ROADMAP.md](./ROADMAP.md).
+For DOCX or PPTX changes, preserve the existing package structure and add a fixture for the exact feature you touched. Fields, tracked changes, comments, charts and right-to-left documents still need more coverage. See [ROADMAP.md](./ROADMAP.md).
