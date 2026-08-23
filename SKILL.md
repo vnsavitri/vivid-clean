@@ -28,7 +28,12 @@ For PDF and images, the session has no `draft.md`. Skip the writing pass and fin
 
 ### 2. Humanise `draft.md`
 
-Open the `draft.md` path printed by the CLI. You're helping one person say what they already mean, so write like it:
+Open the `draft.md` path printed by the CLI. First establish what the user wants:
+
+- Use a `voice-preserving` pass for ordinary editing. This can be light, and it doesn't claim to reduce a keyed statistical watermark.
+- Use `statistical-risk-reduction` only when the user asks for it and accepts a more substantial rewrite. Don't perform this pass with Claude, Gemini, the model that produced the source, or another known watermarked provider. That can add a fresh mark. Use a human editor or a local model whose watermarking is switched off. If you can't establish the backend, stop and offer the voice-preserving pass instead.
+
+You're helping one person say what they already mean, so write like it:
 
 - Edit only inside the labelled blocks. Don't alter, move, add, or remove their HTML comment markers.
 - Preserve names, dates, numbers, quotations, citations, commitments, disclaimers, headings, tables, and list structure.
@@ -41,12 +46,24 @@ Open the `draft.md` path printed by the CLI. You're helping one person say what 
 - Avoid stock AI phrasing, padded conclusions, forced groups of three, vague attribution, and repetitive summary paragraphs.
 - Don't claim the rewrite proves human authorship or defeats a detector.
 
-If the user's chosen assistant is hosted, tell them the text may be sent to that provider. For a local-only pass, have a local model edit `draft.md`, then continue with the same finish command. Don't describe a local model as a guarantee.
+For statistical-risk reduction, change sentence boundaries, clause order and connecting words instead of swapping synonyms inside the same sentence skeleton. Aim to leave fewer than half of the original five-word sequences, while keeping the protected facts and the author's voice. This is a rewrite-depth target, not a watermark detector. Short passages won't contain enough words for the CLI to calculate it.
+
+If the user's chosen assistant is hosted, tell them the text may be sent to that provider and may receive that provider's marks. For a local-only pass, have a local model edit `draft.md`, then continue with the same finish command. Don't describe a local model as a guarantee.
 
 ### 3. Finish and verify
 
 ```bash
-vivid-clean finish "/private/session/path" --suffix "_reviewed"
+vivid-clean finish "/private/session/path" --suffix "_reviewed" \
+  --writing-backend "manual edit" --writing-backend-kind human \
+  --rewrite-purpose voice-preserving
+```
+
+Name the backend honestly. Use `local-unwatermarked` only when a local backend's watermarking is known to be off. A hosted backend is `hosted`, even when the vendor says it doesn't watermark. For statistical-risk reduction, change the final flag and use only `human` or `local-unwatermarked`:
+
+```bash
+vivid-clean finish "/private/session/path" --suffix "_reviewed" \
+  --writing-backend "ollama:qwen3" --writing-backend-kind local-unwatermarked \
+  --rewrite-purpose statistical-risk-reduction
 ```
 
 Use `--output "/absolute/path/to/result.docx"` when the user gave an exact destination. Add `--report-json "/path/to/report.json"` only when they need machine-readable results.
@@ -58,9 +75,12 @@ The finish command:
 3. Removes residual DOCX properties and package references.
 4. Compares the source with the output.
 5. Saves `<output>.vivid-clean-report.md` with separate check channels and engine evidence.
-6. Deletes the restricted session after a valid finish run, whether checks pass or fail.
+6. Records the declared writing backend and a best-effort five-word-sequence overlap measure.
+7. Deletes the restricted session after an output reaches verification, whether checks pass or fail. A correctable pre-output rejection keeps the session so you can fix the draft or run `vivid-clean cleanup`.
 
 Exit status `0` means the checks that ran found no medium or high residual marks. Status `1` means findings remain. Status `2` means a check couldn't finish. Don't present status `1` or `2` as done.
+
+If statistical-risk reduction rejects a long passage for excessive overlap, revise the existing draft and run `finish` again. Don't alter exact quotations or fixed legal and factual wording just to chase the overlap target. If protected material dominates the document, use the voice-preserving mode and report the statistical limitation instead.
 
 ### 4. Report to the user
 
@@ -68,6 +88,7 @@ Give them the output and report paths. Use the report's exact scope:
 
 - Say “the configured checks passed without medium or high residual findings” when the result is `checks_passed`.
 - Name any checks that weren't available.
+- Say who or what performed the writing pass and whether the rewrite-depth measure was computed or insufficient.
 - Never say “there's no watermark” or “this will pass AI detection”.
 - Remind them to inspect formatting and meaning before sending the file.
 

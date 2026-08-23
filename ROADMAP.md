@@ -20,4 +20,5 @@ PDF stays PDF for deterministic cleaning. Humanising still needs an editable sou
 - Add safe directory and batch processing after single-file reports are stable.
 - Add a machine-readable session listing command.
 - Add optional local-model adapters without silently sending text to a hosted service.
+- Add an opt-in official watermark detector when a stable provider API, privacy terms and test fixture are available.
 - Keep cleaning engines behind one capability interface so vendor-specific fallbacks can't pretend to be equivalent.

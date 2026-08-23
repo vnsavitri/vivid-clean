@@ -32,16 +32,20 @@ The source document, author identity, editing history, provenance metadata, host
 | --- | --- | --- |
 | T1 | Deterministic marks survive cleaning | Every finished file passes through `vivid-clean verify`; medium or high residual findings return status 1 |
 | T2 | Editing leaves or adds producer metadata | DOCX properties and their package references are removed after editing, then checked |
-| T3 | A keyed statistical watermark survives | Accepted risk, stated in the report and docs; rewriting is mitigation, not proof |
+| T3 | A keyed statistical watermark survives | Statistical-risk reduction requires a human or declared local unwatermarked backend, rejects superficial long-form rewrites, and stays labelled as mitigation rather than proof |
 | T4 | Uniform style edits or `_vivid` become inverse tells | Contextual voice guidance and a configurable suffix |
 | T5 | A hosted assistant receives sensitive text | Privacy boundary stated before the writing pass; local-model route documented |
 | T6 | A floating upstream dependency is compromised | Exact reviewed commits, origin checks, detached checkout, and licence record |
 | T7 | Another local process calls the cleaner | A short-lived loopback service gets a generated bearer token; hosted use isn't supported |
-| T8 | Temporary text remains after a failure or abandoned session | Session directory uses mode 0700; preparation failures and finish runs remove it, and `vivid-clean cleanup` removes validated expired sessions |
+| T8 | Temporary text remains after a failure or abandoned session | Session directory uses mode 0700; preparation failures and runs that reach verification remove it; correctable rejections retain it for another attempt, and `vivid-clean cleanup` removes validated expired sessions |
 | T9 | A writing pass damages meaning or layout | DOCX and PPTX text is patched inside the cleaned package; protected values and package structures are checked before success, and the original is preserved |
 | T10 | Cleaning breaches policy, copyright, or provenance duties | Rights check and responsible-use guidance |
 | T11 | A filename is mistaken for proof | Every output gets a scoped report; wording avoids universal claims |
 | T12 | A documented upstream name is wrong or later hijacked | Verified origins, exact SHAs, and an audited-dependency record |
+| T13 | The origin model rewrites the text and adds a fresh mark | The skill forbids origin and known watermarked providers for statistical-risk reduction; the CLI accepts only human or declared local-unwatermarked backends in that mode |
+| T14 | A rewrite-depth score is mistaken for detection | Five-word-sequence overlap is labelled as a proxy, short text is `insufficient`, and statistical and official channels remain `not_checked` |
+| T15 | A backend label injects content into the report | Labels are length-limited and reject control characters and Markdown backticks |
+| T16 | An overlap target pressures the user to alter quotations or fixed wording | The skill keeps protected wording authoritative and falls back to voice-preserving mode with statistical risk left unresolved |
 
 ## Trust boundaries and assumptions
 
@@ -50,6 +54,7 @@ The source document, author identity, editing history, provenance metadata, host
 - The writing provider is chosen by the user. Hosted assistants may log or retain text under their own terms.
 - Optional vendor and statistical detectors may send text elsewhere. vivid-clean doesn't enable them silently.
 - Proprietary detectors, keyed watermark removal guarantees, hostile multi-user hosting, Windows, mobile, and guaranteed pixel-level watermark removal are outside the first release.
+- The CLI can't independently prove that a declared local model has watermarking switched off. The declaration and rewrite evidence are recorded so that limitation stays visible.
 
 ## Result states
 
@@ -67,7 +72,7 @@ Schools, clients, and employers may require disclosure of AI assistance or ban d
 
 ## Verification evidence
 
-CI plants known marks in DOCX, PNG, PDF, Unicode, and service responses. Tests prove the verifier catches them, rejects truncated files, preserves legitimate multilingual text, keeps DOCX and PPTX structures during writing, protects numbers and URLs, removes DOCX property relationships without changing the body, and treats an upstream failure as incomplete.
+CI plants known marks in DOCX, PNG, PDF, Unicode, and service responses. Tests prove the verifier catches them, rejects truncated files, preserves legitimate multilingual text, keeps DOCX and PPTX structures during writing, protects numbers and URLs, removes DOCX property relationships without changing the body, refuses unsafe statistical-rewrite claims, records writing provenance, and treats an upstream failure as incomplete.
 
 The verifier is independent of the cleaning engine. It still has limits: a static scanner can't see private detectors, and an unavailable optional tool stays explicitly “not checked”.
 
@@ -78,3 +83,4 @@ The verifier is independent of the cleaning engine. It still has limits: a stati
 | Python CLI and pinned installer | Shell-only orchestration, PEP 668, floating code, skill discovery | T5, T6, T7, T8, T12 |
 | Context-aware verifier, scrubber, reports and CI | False success, re-export metadata, Unicode false positives | T1, T2, T3, T11 |
 | Documentation, voice rules and roadmap | Overclaims, inverse tells, format damage, misuse | T4, T5, T9, T10, T11 |
+| Provider-aware writing pass and rewrite evidence | Re-marking by the origin model, superficial rewrites, proxy overclaims, report injection, pressure to alter fixed wording | T3, T13, T14, T15, T16 |

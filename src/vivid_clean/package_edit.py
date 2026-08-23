@@ -112,7 +112,7 @@ def prepare_package_draft(source: Path, draft: Path, suffix: str) -> dict[str, A
     return {"mode": "ooxml", "suffix": suffix, "token": token, "blocks": blocks}
 
 
-def _read_revisions(draft: Path, editor: dict[str, Any]) -> dict[str, str]:
+def read_package_revisions(draft: Path, editor: dict[str, Any]) -> dict[str, str]:
     try:
         text = draft.read_text(encoding="utf-8")
     except OSError as exc:
@@ -246,7 +246,7 @@ def apply_package_draft(
     template: Path, draft: Path, destination: Path, editor: dict[str, Any]
 ) -> None:
     """Apply prepared text blocks to their original OOXML paragraphs atomically."""
-    revisions = _read_revisions(draft, editor)
+    revisions = read_package_revisions(draft, editor)
     suffix = str(editor["suffix"])
     blocks_by_part: dict[str, list[dict[str, Any]]] = {}
     for block in editor["blocks"]:

@@ -93,6 +93,16 @@ Exit status `0` means the applicable checks finished without medium or high resi
 
 The overall report says `checks_passed`, `findings`, or `incomplete`. It also separates deterministic text, file provenance, statistical, proprietary, protected-value and package-structure results. `checks_passed` only covers the checks named in that report.
 
+### About word-choice watermarks
+
+Some newer models can place a keyed statistical pattern in the words they choose. There isn't a hidden character to strip. Light proofreading may leave that pattern alone, and asking the same provider to rewrite the passage can add a fresh mark.
+
+The ordinary `voice-preserving` pass keeps the edit as close to your writing as it can. If you explicitly choose `statistical-risk-reduction`, vivid-clean requires a human or a declared local model with watermarking switched off. It then measures how many original five-word sequences survived and refuses a superficial rewrite when the passage is long enough to measure. That number only describes rewrite depth. It isn't Anthropic's detector, and it can't prove that a keyed mark is gone.
+
+The overlap target shouldn't trump accuracy. Exact quotations, citations, legal language and fixed technical wording may need to stay untouched. When those passages dominate a document, use the voice-preserving mode and treat statistical watermark risk as unresolved.
+
+Anthropic says supported Claude models use a version of SynthID Text and that its official detection API is still forthcoming. Until a detector is actually available and configured, vivid-clean reports the statistical and proprietary channels as `not_checked`. See [Anthropic's technical explanation](https://www.anthropic.com/news/claude-text-watermark) and [marking limitations](https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content).
+
 If you abandon a session, clear expired plaintext working copies with:
 
 ```bash
@@ -125,6 +135,7 @@ Want the whole workflow to stay local? Use a local model such as Ollama to edit 
 ## Limits and responsible use
 
 - vivid-clean removes deterministic marks its available checks can find. It can't promise a result against keyed statistical watermarks or private third-party detectors.
+- A local model is only treated as unwatermarked when the operator declares that watermarking is off. vivid-clean records that claim but can't inspect the sampler that generated the rewrite.
 - Rewriting can change nuance. You're responsible for checking meaning, attribution, legal intent, and formatting.
 - Many schools and workplaces have rules about AI assistance or detector avoidance. Those rules still apply.
 - Removing C2PA, EXIF, or copyright-related provenance from somebody else's work may be unlawful and can harm the creator. Only clean files you're entitled to edit.
