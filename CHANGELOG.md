@@ -8,6 +8,9 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 
 - Updated the workflow diagram to cover images, editable-file drafts and both writing modes, with the image limits stated plainly.
 - Put the beginner installation prompt in a one-click copy box on GitHub.
+- Added plain-English answers for common AI watermark, document-format, image and privacy questions.
+- Expanded the package and repository search terms around text watermarks, document metadata and local-first cleaning without claiming pixel-level removal.
+- Added release gates for any future opt-in pixel-restoration work.
 
 ## 0.3.0 - 2026-08-23
 

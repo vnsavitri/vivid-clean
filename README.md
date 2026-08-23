@@ -11,7 +11,7 @@
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=flat-square&logo=python&logoColor=white)](./pyproject.toml)
 [![Local metadata cleaning](https://img.shields.io/badge/metadata%20cleaning-local-5B6CFF?style=flat-square)](#privacy-in-plain-english)
 
-`vivid-clean` removes deterministic provenance marks it can identify, helps you revise AI-assisted writing without flattening your voice, then checks the result and tells you what actually happened. It works by mark type, so it isn't tied to Claude, Codex, Gemini or any other vendor.
+`vivid-clean` is a local-first AI watermark and document metadata cleaner for text, DOCX, PPTX and supported image formats. It removes deterministic provenance marks it can identify, helps you revise AI-assisted writing without flattening your voice, then checks the result and tells you what actually happened. It works by mark type, so it isn't tied to Claude, Codex, Gemini or any other vendor.
 
 I built it for people who use AI as an accessibility aid, a writing aid, or simply part of how they get work done. A marker can't tell the difference between outsourcing your thinking and getting help with spelling, structure, fatigue, or a disability. That distinction matters.
 
@@ -181,6 +181,32 @@ vivid-clean doesn't ask you to choose a model for PNG, JPEG or WebP files. The c
 It doesn't send the image through Kimi, DeepSeek, Qwen or another multimodal model. Those aren't supported pixel-removal backends. A visible logo, an imperceptible pattern baked into the pixels, and other pixel-level marks aren't removed by vivid-clean v0.3.0. The report leaves that check as `not_checked` instead of guessing.
 
 Pixel removal may come later as a separate, opt-in restoration step. It needs an exact backend name, local-versus-hosted disclosure, before-and-after checks, and a warning that generated pixels can change the image. Until that exists and passes real tests, vivid-clean won't claim it.
+
+## Common questions
+
+### Is vivid-clean an AI watermark remover?
+
+It's a scoped one. vivid-clean removes deterministic text marks and document provenance metadata its available cleaners can identify. It also reports which statistical or proprietary checks weren't available. It doesn't promise that every outside detector will agree or that every possible watermark is gone.
+
+### Can it remove Claude, ChatGPT, Codex or Gemini watermarks?
+
+vivid-clean works by mark type rather than vendor name. That means it can clean supported deterministic marks and metadata regardless of which tool produced the file. Keyed statistical text watermarks are different: there may be no hidden character or metadata field to remove. Without an official detector, vivid-clean records those checks as `not_checked` instead of claiming success.
+
+### Does it preserve DOCX and PPTX formatting?
+
+It edits text inside a cleaned copy of the existing Office package. It doesn't convert the file to Markdown and rebuild it. Styles, tables, hyperlinks, slide geometry and speaker-note structures stay in place, but heavily styled files, tracked changes and dense slides still deserve a human check.
+
+### Does it remove visible watermarks from images?
+
+Not currently. For PNG, JPEG and WebP files, vivid-clean removes recognised EXIF, XMP, C2PA and other provenance metadata. It doesn't remove a visible logo or an invisible pattern baked into the pixels. Pixel restoration is tracked as future research in the [roadmap](./ROADMAP.md).
+
+### Does everything run locally?
+
+Cleaning, extraction, package editing and verification run on your computer. The optional writing pass runs wherever your chosen assistant runs. If you use a hosted assistant, that provider may receive the extracted text under its own privacy and retention terms.
+
+### What does `not_checked` mean?
+
+It means vivid-clean didn't have a supported way to run that particular check. It isn't a pass or a hidden failure. The report names the missing check so you can judge the result without guessing.
 
 ## Privacy in plain English
 

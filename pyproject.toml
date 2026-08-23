@@ -5,13 +5,28 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vivid-clean"
 version = "0.3.0"
-description = "A local-first document cleaning and verification workflow"
+description = "A local-first AI watermark and document metadata cleaner with scoped verification"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICENSE"]
 authors = [{name = "Vivid Savitri"}]
-keywords = ["accessibility", "ai-watermarking", "document-cleaning", "privacy"]
+keywords = [
+    "accessibility",
+    "ai-provenance",
+    "ai-watermarking",
+    "c2pa",
+    "document-cleaning",
+    "document-metadata",
+    "docx",
+    "exif",
+    "local-first",
+    "metadata-removal",
+    "pptx",
+    "privacy",
+    "text-watermark",
+    "xmp",
+]
 dependencies = []
 
 [project.urls]
