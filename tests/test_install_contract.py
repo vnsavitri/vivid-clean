@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import os
 import subprocess
+import sys
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
+
+from vivid_clean import __version__
 
 
 class InstallerContractTests(unittest.TestCase):
@@ -71,9 +75,110 @@ class InstallerContractTests(unittest.TestCase):
                 (codex_home / "skills" / "vivid-clean" / "SKILL.md").is_file()
             )
             self.assertFalse((old_install / "stale.txt").exists())
-            backups = list((codex_home / "skills").glob("vivid-clean.backup.*"))
-            self.assertEqual(len(backups), 1)
             self.assertEqual(
-                (backups[0] / "stale.txt").read_text(encoding="utf-8"), "old"
+                list((codex_home / "skills").glob("vivid-clean.backup.*")), []
             )
+            state_backups = user_home / ".local" / "state" / "vivid-clean"
+            stale_copies = list(state_backups.rglob("stale.txt"))
+            self.assertEqual(len(stale_copies), 1)
+            self.assertEqual(stale_copies[0].read_text(encoding="utf-8"), "old")
             self.assertFalse((user_home / ".codex" / "skills" / "vivid-clean").exists())
+
+    def test_skills_only_install_moves_discoverable_legacy_backups(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            user_home = root / "user"
+            skills_home = user_home / ".agents" / "skills"
+            legacy_backup = skills_home / "vivid-clean.backup.20260823T000000Z.1"
+            legacy_backup.mkdir(parents=True)
+            (legacy_backup / "SKILL.md").write_text(
+                "---\nname: vivid-clean\n---\n", encoding="utf-8"
+            )
+            environment = os.environ.copy()
+            environment["VIVID_CLEAN_USER_HOME"] = str(user_home)
+            environment["CODEX_HOME"] = str(user_home / ".codex")
+            result = subprocess.run(
+                [
+                    "bash",
+                    str(Path(__file__).parents[1] / "install.sh"),
+                    "--skills-only",
+                ],
+                env=environment,
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            discoverable = list(skills_home.glob("vivid-clean*/SKILL.md"))
+            self.assertEqual(discoverable, [skills_home / "vivid-clean" / "SKILL.md"])
+            migrated = list(
+                (user_home / ".local" / "state" / "vivid-clean").rglob("SKILL.md")
+            )
+            self.assertEqual(len(migrated), 1)
+
+    def test_skill_backup_state_directory_precedence(self) -> None:
+        cases = (
+            ("xdg", False),
+            ("vivid-clean", True),
+        )
+        for expected_name, use_project_override in cases:
+            with (
+                self.subTest(expected_name=expected_name),
+                tempfile.TemporaryDirectory() as temp,
+            ):
+                root = Path(temp)
+                user_home = root / "user"
+                codex_home = root / "codex"
+                old_install = codex_home / "skills" / "vivid-clean"
+                old_install.mkdir(parents=True)
+                (old_install / "stale.txt").write_text("old", encoding="utf-8")
+                xdg_state = root / "xdg"
+                project_state = root / "vivid-clean"
+                environment = os.environ.copy()
+                environment["VIVID_CLEAN_USER_HOME"] = str(user_home)
+                environment["CODEX_HOME"] = str(codex_home)
+                environment["XDG_STATE_HOME"] = str(xdg_state)
+                if use_project_override:
+                    environment["VIVID_CLEAN_STATE_HOME"] = str(project_state)
+                else:
+                    environment.pop("VIVID_CLEAN_STATE_HOME", None)
+
+                result = subprocess.run(
+                    [
+                        "bash",
+                        str(Path(__file__).parents[1] / "install.sh"),
+                        "--skills-only",
+                    ],
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=30,
+                )
+
+                self.assertEqual(result.returncode, 0, result.stderr)
+                expected_root = project_state if use_project_override else xdg_state
+                self.assertEqual(len(list(expected_root.rglob("stale.txt"))), 1)
+                other_root = xdg_state if use_project_override else project_state
+                self.assertEqual(list(other_root.rglob("stale.txt")), [])
+
+    def test_release_version_is_consistent(self) -> None:
+        root = Path(__file__).parents[1]
+        metadata = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
+        expected = metadata["project"]["version"]
+
+        self.assertEqual(__version__, expected)
+        self.assertIn(
+            f"## {expected} - 2026-08-23", (root / "CHANGELOG.md").read_text()
+        )
+        result = subprocess.run(
+            [sys.executable, "-m", "vivid_clean.cli", "--version"],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), f"vivid-clean {expected}")
