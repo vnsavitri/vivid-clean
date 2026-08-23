@@ -12,6 +12,7 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Expanded the package and repository search terms around text watermarks, document metadata and local-first cleaning without claiming pixel-level removal.
 - Added release gates for any future opt-in pixel-restoration work.
 - Linked the public project board from the README so planned, active and finished work is easy to follow.
+- Synced the roadmap with the public backlog, linked earlier merged pull requests to their finished work, and sorted Backlog and Done with the newest cards first.
 
 ## 0.3.0 - 2026-08-23
 

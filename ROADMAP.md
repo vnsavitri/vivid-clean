@@ -1,5 +1,7 @@
 # Roadmap
 
+This file defines the planned scope. The public [vivid-clean backlog](https://github.com/users/vnsavitri/projects/1) mirrors each actionable item and shows whether it's in Backlog, Doing or Done. Finished work is recorded in the [changelog](./CHANGELOG.md).
+
 ## Document fidelity
 
 DOCX and PPTX writing now happens inside the cleaned OOXML package. The editor preserves package members, paragraph and run structures, styles, tables, hyperlinks, slide shapes and speaker-note structures. It doesn't rebuild the document through Markdown.
@@ -10,7 +12,7 @@ PDF stays PDF for deterministic cleaning. Humanising still needs an editable sou
 
 ## Distribution
 
-- Publish tagged releases with checksums.
+- Publish checksums with tagged releases.
 - Add a `uv tool` installation path.
 - Add Windows CI and installation guidance.
 - Add explicit skill install and uninstall commands.
