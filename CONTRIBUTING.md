@@ -16,6 +16,7 @@ Run `shellcheck install.sh` when you change the installer.
 
 ## Pull requests
 
+- Start with a public roadmap issue when one exists. Put `Closes #123` in the pull request body, using the real issue number. Linking the pull request moves the task into Doing; merging it closes the issue and moves the task into Done.
 - Explain which threat or user problem the change handles.
 - Add a regression test for scanners, file rewriting, service responses, or installer logic.
 - Never weaken a check just to make a fixture pass.
@@ -23,4 +24,4 @@ Run `shellcheck install.sh` when you change the installer.
 - Keep privacy and result claims consistent across the README, setup prompt, skill, report wording, and threat model.
 - Update `DEPENDENCIES.md` when changing an upstream pin, after reviewing its source, licence, and interface.
 
-For DOCX or PPTX changes, preserve the existing package structure and add a fixture for the exact feature you touched. Fields, tracked changes, comments, charts and right-to-left documents still need more coverage. See [ROADMAP.md](./ROADMAP.md).
+For DOCX or PPTX changes, preserve the existing package structure and add a fixture for the exact feature you touched. Fields, tracked changes, comments, charts and right-to-left documents still need more coverage. See [ROADMAP.md](./ROADMAP.md) and the public [project board](https://github.com/users/vnsavitri/projects/1).

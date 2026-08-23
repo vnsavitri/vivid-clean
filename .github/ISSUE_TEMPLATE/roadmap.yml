@@ -1,0 +1,34 @@
+name: Roadmap task
+description: Turn an agreed piece of planned work into a trackable task.
+title: ""
+labels:
+  - roadmap
+projects:
+  - vnsavitri/1
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for work that's concrete enough to finish and verify. Keep early research on the project board until the job is clear.
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: What problem does this solve, and who runs into it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: List the behaviour, tests and documentation that would make this task complete.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes and limits
+      description: Record privacy boundaries, blocked dependencies or work that stays outside this task.

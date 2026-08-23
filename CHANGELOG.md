@@ -13,6 +13,8 @@ This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) an
 - Added release gates for any future opt-in pixel-restoration work.
 - Linked the public project board from the README so planned, active and finished work is easy to follow.
 - Synced the roadmap with the public backlog, linked earlier merged pull requests to their finished work, and sorted Backlog and Done with the newest cards first.
+- Turned nine concrete roadmap cards into public issues with finish criteria, while keeping three speculative ideas as project-only drafts.
+- Added a roadmap issue form and pull request guidance so new, linked and merged work updates the project board through GitHub's enabled workflows.
 
 ## 0.3.0 - 2026-08-23
 
