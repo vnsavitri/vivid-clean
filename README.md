@@ -32,7 +32,7 @@ The report says what was checked, what came out, what remains, and which checks 
 
 vivid-clean supports macOS and Linux. It needs Git and Python 3.11 or newer. It doesn't need Pandoc, MarkItDown or Docker.
 
-### New to the command line? Copy this into your AI assistant
+😳 ### New to the command line? Copy this into your AI assistant
 
 Use an assistant that can run terminal commands on your computer, such as Codex, Claude Code or Cursor in agent mode. A browser chat can't install software for you.
 
@@ -55,7 +55,7 @@ At the end, show me the installed version and which assistant skill folders were
 
 That gives you the core cleaner without the optional Node-based fallback. Once `doctor` passes, give your assistant a document path using the prompt under [Use it with an assistant](#use-it-with-an-assistant).
 
-### Comfortable in a terminal? Use pipx
+🤓 ### Comfortable in a terminal? Use pipx
 
 Check the prerequisites, then install:
 
@@ -105,9 +105,11 @@ If Codex uses a custom `CODEX_HOME`, the installer uses that location. Existing 
 
 ## How it works
 
-Your original stays put. vivid-clean makes a restricted working copy, handles the checks it can run locally, and saves the result as a new file with its own report.
+Your original stays as is. vivid-clean makes a restricted working copy, handles the checks it can run locally, and saves the result as a new file with its own report.
 
 ![How vivid-clean keeps the original file untouched, cleans known marks locally, protects values during the writing pass, returns text to the same document format, and saves a checked copy with a report](./docs/assets/vivid-clean-workflow.svg)
+
+👩🏻‍💻 ### Curb your enthusiasm on images
 
 For images, “clean” means removing recognised metadata and provenance fields. vivid-clean v0.3.0 doesn't remove visible logos or pixel-level watermarks, and it doesn't send the image to a multimodal model. Those checks stay `not_checked` in the report.
 
@@ -162,7 +164,7 @@ vivid-clean cleanup --dry-run
 vivid-clean cleanup --older-than 0
 ```
 
-## What works today
+ℹ️ ## What works today
 
 | Input | Current behaviour | Main limitation |
 | --- | --- | --- |
@@ -182,7 +184,7 @@ It doesn't send the image through Kimi, DeepSeek, Qwen or another multimodal mod
 
 Pixel removal may come later as a separate, opt-in restoration step. It needs an exact backend name, local-versus-hosted disclosure, before-and-after checks, and a warning that generated pixels can change the image. Until that exists and passes real tests, vivid-clean won't claim it.
 
-## Common questions
+🙋🏽‍♀️ ## Common questions
 
 ### Is vivid-clean an AI watermark remover?
 
@@ -210,11 +212,11 @@ It means vivid-clean didn't have a supported way to run that particular check. I
 
 ## Privacy in plain English
 
-Here's the honest version. Metadata cleaning, sidecar extraction, package editing and verification run on your computer. Humanising happens wherever your chosen assistant runs. If it's hosted, your text may go to that provider under its privacy and retention terms.
+Straight talk... Metadata cleaning, sidecar extraction, package editing and verification run on your computer. Humanising happens wherever your chosen assistant runs. If it's hosted, your text may go to that provider under its privacy and retention terms.
 
 Advanced users can point the CLI at a persistent loopback service with `WATERMARKS_SERVICE_URL`. Remote addresses are rejected so a configuration mistake can't upload the file. If the service uses `WATERMARKS_SERVER_API_KEY`, export the same value for the CLI. Don't put the token in a command argument, document, or report. A separately started service's commit can't be independently verified, so its self-reported version is recorded instead of the audited local SHA.
 
-Want the whole workflow to stay local? Use a local model such as Ollama to edit the prepared `draft.md`, then run `vivid-clean finish`. That keeps the text on your computer. It still can't guarantee that every watermark is gone or predict what a detector will say.
+Want the whole workflow to stay local? Use a local model such as Ollama (or any model downloaded via LM Studio) to edit the prepared `draft.md`, then run `vivid-clean finish`. That keeps the text on your computer. It still can't guarantee that every watermark is gone or predict what a detector will say.
 
 ## Limits and responsible use
 
@@ -246,4 +248,4 @@ I wrote the longer argument here: [AI watermarking is the new scarlet letter](ht
 - Contributions are welcome. Start with [CONTRIBUTING.md](./CONTRIBUTING.md).
 - Work that's still ahead is tracked in [ROADMAP.md](./ROADMAP.md) and on the public [vivid-clean backlog](https://github.com/users/vnsavitri/projects/1).
 
-Built by [Vivid Savitri](https://github.com/vnsavitri) under the [MIT Licence](./LICENSE).
+Built with 💖 by [Vivid in Sydney ](https://github.com/vnsavitri) under the [MIT Licence](./LICENSE).
