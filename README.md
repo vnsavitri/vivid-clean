@@ -57,6 +57,14 @@ That gives you the core cleaner without the optional Node-based fallback. Once `
 
 ### Comfortable in a terminal? Use pipx 🤓
 
+Check if you don't have pipx installed. do this first:
+
+  Install it with Homebrew:
+
+```bash
+brew install pipx
+```
+  
 Check the prerequisites, then install:
 
 ```bash
