@@ -115,9 +115,9 @@ For images, “clean” means removing recognised metadata and provenance fields
 
 The writing pass follows the assistant you choose. A local model keeps that text on your computer. A hosted assistant may receive the extracted text under that provider's privacy and retention terms.
 
-## Use it with an assistant
+## Use it with an AI assistant
 
-Give your assistant the file path and say what you want:
+Give your AI assistant the file path and say what you want:
 
 > Use the vivid-clean skill on `/full/path/to/Draft.docx`. Keep my meaning and formatting as close as possible, and use a neutral `_reviewed` suffix.
 
